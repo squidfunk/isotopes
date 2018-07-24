@@ -1,7 +1,7 @@
 {
   "name": "izotope",
   "version": "0.0.0",
-  "description": "A typed SimpleDB client to handle hierarchical data",
+  "description": "A SimpleDB client to handle typed hierarchical data",
   "homepage": "https://github.com/squidfunk/izotope",
   "bugs": {
     "url": "https://github.com/squidfunk/izotope/",
