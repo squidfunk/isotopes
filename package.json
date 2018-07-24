@@ -1,0 +1,51 @@
+{
+  "name": "izotope",
+  "version": "0.0.0",
+  "description": "A typed SimpleDB client to handle hierarchical data",
+  "homepage": "https://github.com/squidfunk/izotope",
+  "bugs": {
+    "url": "https://github.com/squidfunk/izotope/",
+    "email": "martin.donath@squidfunk.com"
+  },
+  "private": true,
+  "author": {
+    "name": "Martin Donath",
+    "email": "martin.donath@squidfunk.com"
+  },
+  "contributors": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/squidfunk/terraform-aws-cognito-auth.git"
+  },
+  "scripts": {
+    "build": "make build",
+    "clean": "make clean",
+    "lint": "make lint",
+    "start": "make start",
+    "test": "make test",
+    "test:acceptance": "make test-acceptance",
+    "watch": "make watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/chance": "^1.0.0",
+    "@types/jasmine": "^2.8.6",
+    "@types/node": "^9.6.2",
+    "@types/uuid": "^3.4.3",
+    "aws-sdk": "^2.279.1",
+    "aws-sdk-mock": "^2.0.0",
+    "chance": "^1.0.13",
+    "dotenv": "^5.0.1",
+    "jasmine": "^3.1.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "nyc": "^11.6.0",
+    "ts-node": "^7.0.0",
+    "tsconfig-paths": "^3.2.0",
+    "tslint": "^5.9.1",
+    "tslint-sonarts": "^1.6.0",
+    "typescript": "^2.9.2"
+  },
+  "peerDependencies": {
+    "aws-sdk": "*"
+  }
+}

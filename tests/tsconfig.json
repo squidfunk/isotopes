@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "_/*": ["../tests/*"]
+    },
+    "removeComments": false
+  },
+  "include": [
+    "../src",
+    "../tests",
+    "../typings"
+  ]
+}

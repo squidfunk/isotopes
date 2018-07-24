@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "baseUrl": "src",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es2017",
+      "esnext"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "dist",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": false,
+    "strict": true,
+    "stripInternal": true,
+    "target": "es2017"
+  },
+  "include": [
+    "src",
+    "typings"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
