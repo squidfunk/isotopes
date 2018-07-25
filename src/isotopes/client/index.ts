@@ -38,8 +38,8 @@ export type IsotopeClientConfiguration = SimpleDB.ClientConfiguration
  * Isotope record
  */
 export interface IsotopeRecord {
-  id: string,                          /* Item identifier */
-  attrs: IsotopeDictionary             /* Item attributes */
+  id: string,                          /* Record identifier */
+  attrs: IsotopeDictionary             /* Record attributes */
 }
 
 /* ----------------------------------------------------------------------------
@@ -130,9 +130,10 @@ export class IsotopeClient {
     await this.simpledb.deleteAttributes({
       DomainName: this.domain,
       ItemName: id,
-      Attributes: (names || []).map<SimpleDB.DeletableAttribute>(name => ({
-        Name: name
-      }))
+      Attributes: (names || [])
+        .map<SimpleDB.DeletableAttribute>(name => ({
+          Name: name
+        }))
     }).promise()
   }
 }

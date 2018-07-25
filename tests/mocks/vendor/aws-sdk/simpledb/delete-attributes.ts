@@ -20,8 +20,58 @@
  * IN THE SOFTWARE.
  */
 
+import { Callback } from "aws-lambda"
+import { mock, restore } from "aws-sdk-mock"
+
 /* ----------------------------------------------------------------------------
- * Re-exports
+ * Functions
  * ------------------------------------------------------------------------- */
 
-export * from "./isotopes"
+/**
+ * Mock SimpleDB.deleteAttributes
+ *
+ * @param spy - Spy/fake to mock SimpleDB
+ *
+ * @return Jasmine spy
+ */
+function mockSimpleDBDeleteAttributes(
+  spy: jasmine.Spy
+): jasmine.Spy {
+  mock("SimpleDB", "deleteAttributes",
+    (data: any, cb: Callback) => {
+      cb(undefined, spy(data))
+    })
+  return spy
+}
+
+/**
+ * Mock SimpleDB.deleteAttributes returning with success
+ *
+ * @return Jasmine spy
+ */
+export function mockSimpleDBDeleteAttributesWithSuccess(): jasmine.Spy {
+  return mockSimpleDBDeleteAttributes(
+    jasmine.createSpy("deleteAttributes"))
+}
+
+/**
+ * Mock SimpleDB.deleteAttributes throwing an error
+ *
+ * @param err - Error to be thrown
+ *
+ * @return Jasmine spy
+ */
+export function mockSimpleDBDeleteAttributesWithError(
+  err: Error = new Error("deleteAttributes")
+): jasmine.Spy {
+  return mockSimpleDBDeleteAttributes(
+    jasmine.createSpy("deleteAttributes")
+      .and.callFake(() => { throw err }))
+}
+
+/**
+ * Restore SimpleDB.deleteAttributes
+ */
+export function restoreSimpleDBDeleteAttributes() {
+  restore("SimpleDB", "deleteAttributes")
+}

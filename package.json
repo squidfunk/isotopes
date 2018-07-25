@@ -32,6 +32,7 @@
     "reflect-metadata": "^0.1.12"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.8",
     "@types/chance": "^1.0.0",
     "@types/flat": "0.0.28",
     "@types/jasmine": "^2.8.6",

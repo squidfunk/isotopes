@@ -20,8 +20,58 @@
  * IN THE SOFTWARE.
  */
 
+import { Callback } from "aws-lambda"
+import { mock, restore } from "aws-sdk-mock"
+
 /* ----------------------------------------------------------------------------
- * Re-exports
+ * Functions
  * ------------------------------------------------------------------------- */
 
-export * from "./isotopes"
+/**
+ * Mock SimpleDB.putAttributes
+ *
+ * @param spy - Spy/fake to mock SimpleDB
+ *
+ * @return Jasmine spy
+ */
+function mockSimpleDBPutAttributes(
+  spy: jasmine.Spy
+): jasmine.Spy {
+  mock("SimpleDB", "putAttributes",
+    (data: any, cb: Callback) => {
+      cb(undefined, spy(data))
+    })
+  return spy
+}
+
+/**
+ * Mock SimpleDB.putAttributes returning with success
+ *
+ * @return Jasmine spy
+ */
+export function mockSimpleDBPutAttributesWithSuccess(): jasmine.Spy {
+  return mockSimpleDBPutAttributes(
+    jasmine.createSpy("putAttributes"))
+}
+
+/**
+ * Mock SimpleDB.putAttributes throwing an error
+ *
+ * @param err - Error to be thrown
+ *
+ * @return Jasmine spy
+ */
+export function mockSimpleDBPutAttributesWithError(
+  err: Error = new Error("putAttributes")
+): jasmine.Spy {
+  return mockSimpleDBPutAttributes(
+    jasmine.createSpy("putAttributes")
+      .and.callFake(() => { throw err }))
+}
+
+/**
+ * Restore SimpleDB.putAttributes
+ */
+export function restoreSimpleDBPutAttributes() {
+  restore("SimpleDB", "putAttributes")
+}
