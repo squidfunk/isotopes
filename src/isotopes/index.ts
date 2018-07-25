@@ -32,9 +32,9 @@ import { decode, encode } from "isotopes/format"
 /**
  * Isotope configuration
  *
- * @template T - Object type
+ * @template T - Data type
  */
-export interface IsotopeConfiguration<T> {
+export interface IsotopeConfiguration<T extends {}> {
   domain: string                       /* SimpleDB domain name */
   key: keyof T                         /* SimpleDB item name (primary key) */
 }
@@ -46,7 +46,7 @@ export interface IsotopeConfiguration<T> {
 /**
  * Isotope
  *
- * @template T - Object type
+ * @template T - Data type
  */
 export class Isotope<T extends {}> {
 
@@ -56,7 +56,7 @@ export class Isotope<T extends {}> {
   protected client: IsotopeClient
 
   /**
-   * Object key used as item name
+   * SimpleDB item name (primary key)
    */
   protected key: keyof T
 
@@ -71,18 +71,18 @@ export class Isotope<T extends {}> {
   }
 
   /**
-   * Retrieve an item
+   * Retrieve an item by identifier
    *
-   * @param id - Item identifier
+   * @param id - Identifier
    *
-   * @return Promise resolving with item
+   * @return Promise resolving with item data
    */
   public async get(id: string): Promise<T | undefined> {
-    const record = await this.client.get(id)
-    if (record) {
-      const item: any = decode(record.attrs) // TODO: fix types
-      item[this.key] = record.id
-      return item
+    const item = await this.client.get(id)
+    if (item) {
+      const data: T = decode(item.attrs)
+      data[this.key] = item.id as any // TODO: Fix types
+      return data
     }
     return undefined
   }
@@ -90,24 +90,23 @@ export class Isotope<T extends {}> {
   /**
    * Persist an item
    *
-   * @param item - Item
+   * @param data - Data
    *
    * @return Promise resolving with no result
    */
-  public async put(item: T): Promise<void> {
-    const data = omit(item, this.key)
+  public async put(data: T): Promise<void> {
     await this.client.put(
-      item[this.key].toString(),
-      encode(data)
+      data[this.key].toString(),
+      encode(omit(data, this.key))
     )
   }
 
   /**
-   * Delete an item
+   * Delete item
    *
    * @param item - Item identifier
    *
-   * @return Promise resolving with item
+   * @return Promise resolving with no result
    */
   public async delete(id: string): Promise<void> {
     await this.client.delete(id)

@@ -30,14 +30,9 @@ import { IsotopeDictionary } from "isotopes/format"
  * ------------------------------------------------------------------------- */
 
 /**
- * Isotope client configuration
+ * Isotope client item
  */
-export type IsotopeClientConfiguration = SimpleDB.ClientConfiguration
-
-/**
- * Isotope record
- */
-export interface IsotopeRecord {
+export interface IsotopeClientItem {
   id: string,                          /* Record identifier */
   attrs: IsotopeDictionary             /* Record attributes */
 }
@@ -72,7 +67,7 @@ export class IsotopeClient {
    */
   public async get(
     id: string, names?: string[]
-  ): Promise<IsotopeRecord | undefined> {
+  ): Promise<IsotopeClientItem | undefined> {
     const { Attributes } = await this.simpledb.getAttributes({
       DomainName: this.domain,
       ItemName: id,

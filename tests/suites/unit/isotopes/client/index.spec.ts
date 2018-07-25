@@ -72,24 +72,24 @@ describe("isotopes/client", () => {
       it("should resolve with identifier and attributes", async () => {
         mockSimpleDBGetAttributesWithResult(attrs)
         const client = new IsotopeClient(domain)
-        const record = await client.get(id)
-        expect(record).toEqual({ id, attrs })
+        const item = await client.get(id)
+        expect(item).toEqual({ id, attrs })
       })
 
       /* Test: should resolve with attributes for empty item */
       it("should resolve with empty attributes for empty item", async () => {
         mockSimpleDBGetAttributesWithResult()
         const client = new IsotopeClient(domain)
-        const record = await client.get(id)
-        expect(record).toEqual({ id, attrs: {} })
+        const item = await client.get(id)
+        expect(item).toEqual({ id, attrs: {} })
       })
 
       /* Test: should resolve with undefined for non-existent item */
       it("should resolve with undefined for non-existent item", async () => {
         mockSimpleDBGetAttributesWithoutResult()
         const client = new IsotopeClient(domain)
-        const record = await client.get(id)
-        expect(record).toBeUndefined()
+        const item = await client.get(id)
+        expect(item).toBeUndefined()
       })
 
       /* Test: should pass attribute names to SimpleDB */

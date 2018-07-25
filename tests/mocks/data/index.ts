@@ -20,46 +20,40 @@
  * IN THE SOFTWARE.
  */
 
-import { flatten, unflatten } from "flat"
-import { Dictionary, mapValues } from "lodash"
+import { chance } from "_/helpers"
 
 /* ----------------------------------------------------------------------------
  * Types
  * ------------------------------------------------------------------------- */
 
 /**
- * Isotope dictionary
+ * Data type for testing
  */
-export type IsotopeDictionary = Dictionary<string>
+export interface Data {
+  id: string                           /* Identifier */
+  random: {
+    string: string                     /* String value */
+    number: number                     /* Numeric value */
+    boolean: boolean                   /* Boolean value */
+  }
+}
 
 /* ----------------------------------------------------------------------------
- * Functions
+ * Data
  * ------------------------------------------------------------------------- */
 
 /**
- * Flatten data into a dictionary
+ * Mock data
  *
- * @template T - Data type
- *
- * @param data - Data to encode
- *
- * @return Encoded dictionary
+ * @return Data
  */
-export function encode<T extends {}>(data: T): IsotopeDictionary {
-  const dict = flatten(data, { safe: true })
-  return mapValues(dict, JSON.stringify)
-}
-
-/**
- * Unflatten an encoded dictionary
- *
- * @template T - Data type
- *
- * @param dict - Dictionary to decode
- *
- * @return Decoded data
- */
-export function decode<T extends {}>(dict: IsotopeDictionary): T {
-  const data = mapValues(dict, JSON.parse)
-  return unflatten(data)
+export function mockData(): Data {
+  return {
+    id: chance.string(),
+    random: {
+      string: chance.string(),
+      number: chance.integer(),
+      boolean: chance.bool()
+    }
+  }
 }
