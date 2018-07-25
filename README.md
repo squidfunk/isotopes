@@ -14,8 +14,8 @@
 
 # Isotopes
 
-A SimpleDB client which indexes JSON objects in AWS SimpleDB with support for
-SQL queries &mdash; i.e. a super lightweight and typed object store.
+A serverless, typed and super lightweight object store that enables storage,
+indexing and querying of JSON documents in SimpleDB using SQL queries.
 
 ## Installation
 
@@ -24,6 +24,72 @@ npm install isotopes
 ```
 
 TypeScript typings are provided as part of the package.
+
+## Usage
+
+First, define a TypeScript interface for the data you want to store, e.g. a
+type for running a task on a cluster:
+
+``` ts
+export interface Task {
+  id: string
+  active: boolean
+  props: {
+    image: string
+    cpus: number
+    memory: number
+    command?: string
+  }
+}
+```
+
+Next, create an isotope for the type using an **existing** SimpleDB domain. An
+isotope is a thin wrapper around a SimpleDB domain which enable storage and
+retrieval of typed hierarchical data. The domain should be empty, because this
+library assumes JSON encoding for all entries that are part of the domain.
+
+``` ts
+const tasks = new Isotope<Task>({ domain: "...", key: "id" })
+```
+
+Now we can persist and retrieve instances of our type from the isotope by using
+a simple API, cleverly omitting all the boilerplate that is normally necessary
+for interfacing with SimpleDB. Persistence is as simple as:
+
+``` ts
+await tasks.put({
+  id: "example",
+  active: true,
+  props: {
+    image: "busybox",
+    cpus: 2,
+    memory: 2048
+  }
+})
+```
+
+All values are JSON-encoded, which means that strings are double-quoted,
+whereas numbers and booleans are written literally:
+
+``` json
+{
+  "Name": "example",
+  "Attributes": [
+    { "Name": "active", "Value": "true" },
+    { "Name": "props.image", "Value": "\"busybox\"" },
+    { "Name": "props.cpus", "Value": "2" },
+    { "Name": "props.memory", "Value": "2048" }
+  ]
+}
+```
+
+Retrieval is equally straight forward:
+
+``` ts
+const task = await tasks.get("example")
+```
+
+TBD
 
 ## License
 

@@ -21,7 +21,7 @@
  */
 
 import { flatten, unflatten } from "flat"
-import { Dictionary, mapValues } from "lodash"
+import { mapValues } from "lodash"
 
 /* ----------------------------------------------------------------------------
  * Types
@@ -30,7 +30,9 @@ import { Dictionary, mapValues } from "lodash"
 /**
  * Isotope dictionary
  */
-export type IsotopeDictionary = Dictionary<string>
+export interface IsotopeDictionary {
+  [key: string]: string                /* Key-value pairs */
+}
 
 /* ----------------------------------------------------------------------------
  * Functions
@@ -38,6 +40,10 @@ export type IsotopeDictionary = Dictionary<string>
 
 /**
  * Flatten data into a dictionary
+ *
+ * String values are not encoded as JSON but as literals, so we can leverage
+ * standard SQL queries. Otherwise every string would be encapsulated in quotes
+ * which makes querying less user-friendly.
  *
  * @template T - Data type
  *

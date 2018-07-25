@@ -74,11 +74,16 @@ export class Isotope<T extends {}> {
    * Retrieve an item by identifier
    *
    * @param id - Identifier
+   * @param names - Attribute names
    *
-   * @return Promise resolving with item data
+   * @return Promise resolving with (partial) item data
    */
-  public async get(id: string): Promise<T | undefined> {
-    const item = await this.client.get(id)
+  public async get(id: string): Promise<T | undefined>
+  public async get(id: string, names: string[]): Promise<Partial<T> | undefined>
+  public async get(
+    id: string, names?: string[]
+  ): Promise<T | Partial<T> | undefined> {
+    const item = await this.client.get(id, names)
     if (item) {
       const data: T = decode(item.attrs)
       data[this.key] = item.id as any // TODO: Fix types
@@ -94,7 +99,7 @@ export class Isotope<T extends {}> {
    *
    * @return Promise resolving with no result
    */
-  public async put(data: T): Promise<void> {
+  public async put(data: Partial<T>): Promise<void> {
     await this.client.put(
       data[this.key].toString(),
       encode(omit(data, this.key))

@@ -1,7 +1,7 @@
 {
   "name": "isotopes",
   "version": "0.0.0",
-  "description": "A SimpleDB client to handle typed hierarchical data",
+  "description": "Serverless and typed object store using AWS SimpleDB",
   "homepage": "https://github.com/squidfunk/isotopes",
   "bugs": {
     "url": "https://github.com/squidfunk/isotopes/",
@@ -29,7 +29,8 @@
     "flat": "^4.1.0",
     "lodash": "^4.17.10",
     "minimatch": "^3.0.4",
-    "reflect-metadata": "^0.1.12"
+    "reflect-metadata": "^0.1.12",
+    "squel": "^5.12.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.8",
