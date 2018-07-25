@@ -14,6 +14,8 @@
 
 # Isotopes
 
+[![Join the chat at https://gitter.im/squidfunk/isotopes](https://badges.gitter.im/squidfunk/isotopes.svg)](https://gitter.im/squidfunk/isotopes?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A SimpleDB client which indexes JSON objects in AWS SimpleDB with support for
 SQL queries &mdash; i.e. a super lightweight and typed object store.
 
