@@ -14,7 +14,16 @@
 
 # Isotopes
 
-TBD
+A SimpleDB client which indexes JSON objects in AWS SimpleDB with support for
+SQL queries &mdash; i.e. a super lightweight and typed object store.
+
+## Installation
+
+``` sh
+npm install isotopes
+```
+
+TypeScript typings are provided as part of the package.
 
 ## License
 

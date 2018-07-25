@@ -18,37 +18,34 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-language: node_js
-sudo: false
+# macOS internals
+.DS_Store
 
-# Node.js version
-node_js: 8
+# NPM-related
+/node_modules
+/npm-debug.log*
 
-# Limit clone depth to 5, to speed up build
-git:
-  depth: 5
+# Source files
+/src
+/tests
+/typings
 
-# Cache dependencies
-cache:
-  directories:
-    - node_modules
+# Coverage reports
+/coverage
 
-# Perform build and release
-script:
-  - make lint
-  - make build
-  - make test
+# Configuration
+.codecov.yml
+.editorconfig
+.gitignore
+.npmignore
+.travis.yml
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+Makefile
+package-lock.json
+tsconfig.json
+tslint.json
 
-# Upload coverage report
-after_success:
-  - node_modules/.bin/codecov
-
-# Release specification
-deploy:
-  provider: npm
-  email: $NPM_EMAIL
-  api_key: $NPM_TOKEN
-  on:
-    branch: master
-    tags: true
-  skip_cleanup: true
+# Git-related
+/.githooks
+/.github

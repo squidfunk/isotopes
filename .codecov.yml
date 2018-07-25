@@ -18,37 +18,43 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-language: node_js
-sudo: false
+coverage:
 
-# Node.js version
-node_js: 8
+  # Coverage status
+  status:
 
-# Limit clone depth to 5, to speed up build
-git:
-  depth: 5
+    # Overall project status
+    project:
+      default:
+        enabled: yes
+        target: auto
+        threshold: 1%
+        if_no_uploads: error
+        if_not_found: success
+        if_ci_failed: error
 
-# Cache dependencies
-cache:
-  directories:
-    - node_modules
+    # Pull request coverage diff
+    patch:
+      default:
+        enabled: yes
+        target: 95%
+        threshold: 1%
+        if_no_uploads: error
+        if_not_found: success
+        if_ci_failed: error
 
-# Perform build and release
-script:
-  - make lint
-  - make build
-  - make test
+    # Unexpected changes
+    changes:
+      default:
+        enabled: yes
+        if_no_uploads: error
+        if_not_found: success
+        if_ci_failed: error
 
-# Upload coverage report
-after_success:
-  - node_modules/.bin/codecov
-
-# Release specification
-deploy:
-  provider: npm
-  email: $NPM_EMAIL
-  api_key: $NPM_TOKEN
-  on:
-    branch: master
-    tags: true
-  skip_cleanup: true
+# Comments inside pull requests
+comment:
+  layout: header, tree, changes, files
+  behavior: default
+  paths:
+    - src
+    - tests
