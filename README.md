@@ -3,16 +3,16 @@
 [![Gitter][gitter-image]][gitter-link]
 [![GitHub][github-image]][github-link]
 
-  [travis-image]: https://travis-ci.org/squidfunk/izotope.svg?branch=master
-  [travis-link]: https://travis-ci.org/squidfunk/izotope
-  [codecov-image]: https://img.shields.io/codecov/c/github/squidfunk/izotope/master.svg
-  [codecov-link]: https://codecov.io/gh/squidfunk/izotope
-  [gitter-image]: https://badges.gitter.im/squidfunk/izotope.svg
-  [gitter-link]: https://gitter.im/squidfunk/izotope
-  [github-image]: https://img.shields.io/github/release/squidfunk/izotope.svg
-  [github-link]: https://github.com/squidfunk/izotope/releases
+  [travis-image]: https://travis-ci.org/squidfunk/isotopes.svg?branch=master
+  [travis-link]: https://travis-ci.org/squidfunk/isotopes
+  [codecov-image]: https://img.shields.io/codecov/c/github/squidfunk/isotopes/master.svg
+  [codecov-link]: https://codecov.io/gh/squidfunk/isotopes
+  [gitter-image]: https://badges.gitter.im/squidfunk/isotopes.svg
+  [gitter-link]: https://gitter.im/squidfunk/isotopes
+  [github-image]: https://img.shields.io/github/release/squidfunk/isotopes.svg
+  [github-link]: https://github.com/squidfunk/isotopes/releases
 
-# Izotope
+# Isotopes
 
 TBD
 

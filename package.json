@@ -1,10 +1,10 @@
 {
-  "name": "izotope",
+  "name": "isotopes",
   "version": "0.0.0",
   "description": "A SimpleDB client to handle typed hierarchical data",
-  "homepage": "https://github.com/squidfunk/izotope",
+  "homepage": "https://github.com/squidfunk/isotopes",
   "bugs": {
-    "url": "https://github.com/squidfunk/izotope/",
+    "url": "https://github.com/squidfunk/isotopes/",
     "email": "martin.donath@squidfunk.com"
   },
   "private": true,
@@ -15,21 +15,28 @@
   "contributors": [],
   "repository": {
     "type": "git",
-    "url": "https://github.com/squidfunk/terraform-aws-cognito-auth.git"
+    "url": "https://github.com/squidfunk/isotopes.git"
   },
   "scripts": {
     "build": "make build",
     "clean": "make clean",
     "lint": "make lint",
-    "start": "make start",
     "test": "make test",
     "test:acceptance": "make test-acceptance",
     "watch": "make watch"
   },
-  "dependencies": {},
+  "dependencies": {
+    "flat": "^4.1.0",
+    "lodash": "^4.17.10",
+    "minimatch": "^3.0.4",
+    "reflect-metadata": "^0.1.12"
+  },
   "devDependencies": {
     "@types/chance": "^1.0.0",
+    "@types/flat": "0.0.28",
     "@types/jasmine": "^2.8.6",
+    "@types/lodash": "^4.14.113",
+    "@types/minimatch": "^3.0.3",
     "@types/node": "^9.6.2",
     "@types/uuid": "^3.4.3",
     "aws-sdk": "^2.279.1",
@@ -38,6 +45,7 @@
     "dotenv": "^5.0.1",
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.2.1",
+    "nodemon": "^1.18.3",
     "nyc": "^11.6.0",
     "ts-node": "^7.0.0",
     "tsconfig-paths": "^3.2.0",

@@ -20,8 +20,41 @@
  * IN THE SOFTWARE.
  */
 
+import { flatten, unflatten } from "flat"
+import { Dictionary, mapValues } from "lodash"
+
 /* ----------------------------------------------------------------------------
- * Re-exports
+ * Types
  * ------------------------------------------------------------------------- */
 
-export * from "isotopes"
+/**
+ * Isotope dictionary
+ */
+export type IsotopeDictionary = Dictionary<string>
+
+/* ----------------------------------------------------------------------------
+ * Functions
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Flatten data into a dictionary
+ *
+ * @param data - Data to encode
+ *
+ * @return Encoded dictionary
+ */
+export function encode<T extends {}>(data: T): IsotopeDictionary {
+  const dict = flatten(data, { safe: true })
+  return mapValues(dict, JSON.stringify)
+}
+
+/**
+ * Unflatten an encoded dictionary
+ *
+ * @param dict - Dictionary to decode
+ *
+ * @return Decoded data
+ */
+export function decode<T>(dict: IsotopeDictionary): T {
+  return unflatten(mapValues(dict, JSON.parse))
+}
