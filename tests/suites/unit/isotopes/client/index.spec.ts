@@ -92,6 +92,19 @@ describe("isotopes/client", () => {
         expect(item).toBeUndefined()
       })
 
+      /* Test: should make consistent reads if enabled */
+      it("should make consistent reads if enabled", async () => {
+        const getAttributesMock = mockSimpleDBGetAttributesWithResult()
+        const client = new IsotopeClient(domain, { consistent: true })
+        await client.get(id, Object.keys(attrs))
+        expect(getAttributesMock).toHaveBeenCalledWith({
+          DomainName: domain,
+          ItemName: id,
+          AttributeNames: Object.keys(attrs),
+          ConsistentRead: true
+        })
+      })
+
       /* Test: should pass attribute names to SimpleDB */
       it("should pass attribute names to SimpleDB", async () => {
         const getAttributesMock = mockSimpleDBGetAttributesWithResult()
@@ -100,7 +113,8 @@ describe("isotopes/client", () => {
         expect(getAttributesMock).toHaveBeenCalledWith({
           DomainName: domain,
           ItemName: id,
-          AttributeNames: Object.keys(attrs)
+          AttributeNames: Object.keys(attrs),
+          ConsistentRead: false
         })
       })
 

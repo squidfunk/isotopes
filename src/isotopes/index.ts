@@ -22,7 +22,10 @@
 
 import { omit } from "lodash"
 
-import { IsotopeClient } from "isotopes/client"
+import {
+  IsotopeClient,
+  IsotopeClientOptions
+} from "isotopes/client"
 import {
   decode,
   encode,
@@ -39,9 +42,10 @@ import {
  * @template T - Data type
  */
 export interface IsotopeOptions<T extends {}> {
-  format?: IsotopeFormatOptions        /* Format options */
   domain: string                       /* SimpleDB domain name */
   key: keyof T                         /* SimpleDB item name (primary key) */
+  format?: IsotopeFormatOptions        /* Format options */
+  client?: IsotopeClientOptions        /* Client options */
 }
 
 /* ----------------------------------------------------------------------------

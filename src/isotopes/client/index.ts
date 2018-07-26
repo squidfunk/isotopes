@@ -30,11 +30,29 @@ import { IsotopeDictionary } from "isotopes/format"
  * ------------------------------------------------------------------------- */
 
 /**
+ * Isotope client options
+ */
+export interface IsotopeClientOptions {
+  consistent: boolean                  /* Whether to use consistent reads */
+}
+
+/**
  * Isotope client item
  */
 export interface IsotopeClientItem {
   id: string,                          /* Record identifier */
   attrs: IsotopeDictionary             /* Record attributes */
+}
+
+/* ----------------------------------------------------------------------------
+ * Values
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Default client options
+ */
+const defaultOptions: IsotopeClientOptions = {
+  consistent: false
 }
 
 /* ----------------------------------------------------------------------------
@@ -47,15 +65,22 @@ export interface IsotopeClientItem {
 export class IsotopeClient {
 
   /**
+   * SimpleDB instance
+   */
+  protected simpledb: SimpleDB
+
+  /**
    * Create a SimpleDB client
    *
    * @param domain - SimpleDB domain name
-   * @param simpledb - SimpleDB client
+   * @param options - Client options
    */
   public constructor(
     protected domain: string,
-    protected simpledb = new SimpleDB({ apiVersion: "2009-04-15" })
-  ) {}
+    protected options: IsotopeClientOptions = defaultOptions
+  ) {
+    this.simpledb = new SimpleDB({ apiVersion: "2009-04-15" })
+  }
 
   /**
    * Retrieve an item from SimpleDB
@@ -71,7 +96,8 @@ export class IsotopeClient {
     const { Attributes } = await this.simpledb.getAttributes({
       DomainName: this.domain,
       ItemName: id,
-      AttributeNames: names
+      AttributeNames: names,
+      ConsistentRead: this.options.consistent
     }).promise()
 
     /* Item not found */

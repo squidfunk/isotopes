@@ -29,6 +29,9 @@ export {
   IsotopeOptions
 } from "./isotopes"
 export {
+  IsotopeClientOptions
+} from "./isotopes/client"
+export {
   IsotopeFormatOptions,
   IsotopeFormatType
 } from "./isotopes/format"
