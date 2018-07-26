@@ -23,8 +23,8 @@
 import {
   decode,
   encode,
-  IsotopeFormatOptions,
-  IsotopeFormatType
+  IsotopeFormatMethod,
+  IsotopeFormatOptions
 } from "isotopes/format"
 
 import { chance } from "_/helpers"
@@ -78,12 +78,12 @@ describe("isotopes/format", () => {
       })
     })
 
-    /* with options.primitives = TEXT */
-    describe("with options.primitives = TEXT", () => {
+    /* with options.method = TEXT */
+    describe("with options.method = TEXT", () => {
 
       /* Format options */
       const options: IsotopeFormatOptions = {
-        primitives: IsotopeFormatType.TEXT
+        method: IsotopeFormatMethod.TEXT
       }
 
       /* Test: should flatten nested objects */
@@ -178,12 +178,12 @@ describe("isotopes/format", () => {
       }).toThrowError()
     })
 
-    /* with options.primitives = TEXT */
-    describe("with options.primitives = TEXT", () => {
+    /* with options.method = TEXT */
+    describe("with options.method = TEXT", () => {
 
       /* Format options */
       const options: IsotopeFormatOptions = {
-        primitives: IsotopeFormatType.TEXT
+        method: IsotopeFormatMethod.TEXT
       }
 
       /* Test: should expand nested objects */

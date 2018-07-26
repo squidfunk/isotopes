@@ -23,7 +23,7 @@
 import { Expression, select, Select } from "squel"
 
 import { IsotopeOptions } from "isotopes"
-import { IsotopeFormatType } from "isotopes/format"
+import { IsotopeFormatMethod } from "isotopes/format"
 
 /* ----------------------------------------------------------------------------
  * Class
@@ -65,7 +65,7 @@ export class IsotopeSelect<T extends {}> {
    */
   public where(condition: string | Expression, ...args: string[]): this {
     if (typeof this.options.format === "undefined" ||
-        this.options.format.primitives === IsotopeFormatType.JSON) {
+        this.options.format.method === IsotopeFormatMethod.JSON) {
       this.sql.where(condition, ...args.map(arg => {
         return typeof condition === "string" && condition.match(/ LIKE /i)
           ? arg.replace(/(^(?!%)|([^%]|\\%)$)/g, (_$0, $1) => `${$1}\"`)
