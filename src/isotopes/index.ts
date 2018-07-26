@@ -31,6 +31,9 @@ import {
   encode,
   IsotopeFormatOptions
 } from "isotopes/format"
+import {
+  IsotopeSelect
+} from "isotopes/select"
 
 /* ----------------------------------------------------------------------------
  * Types
@@ -46,6 +49,18 @@ export interface IsotopeOptions<T extends {}> {
   client?: IsotopeClientOptions        /* Client options */
   domain: string                       /* SimpleDB domain name */
   key: keyof T                         /* SimpleDB item name (primary key) */
+}
+
+/**
+ * Isotope result
+ *
+ * @template T - Data type
+ */
+export interface IsotopeResult<T extends {}> {
+  items: T[]                           /* Items on current page */
+  next?: () => Promise<
+    IsotopeResult<T>
+  >                                    /* Next page */
 }
 
 /* ----------------------------------------------------------------------------
@@ -79,13 +94,13 @@ export interface IsotopeOptions<T extends {}> {
  *   new Isotope<Type, Type, Partial<Type>>
  *
  * @template T - Data type
- * @template TGet - Data type returned by put operation
+ * @template TGet - Data type expected by put operation
  * @template TPut - Data type returned by get operation
  */
 export class Isotope<
   T    extends {},
   TPut extends Partial<T> = T,
-  TGet extends Partial<T> = T
+  TGet extends Partial<T> = TPut
 > {
 
   /**
@@ -103,20 +118,29 @@ export class Isotope<
   }
 
   /**
+   * Create an SQL query builder
+   *
+   * @return SQL query builder
+   */
+  public getQueryBuilder(): IsotopeSelect<T> {
+    return new IsotopeSelect(this.options)
+  }
+
+  /**
    * Retrieve an item by identifier
    *
    * @param id - Identifier
    * @param names - Attribute names
    *
-   * @return Promise resolving with (partial) item data
+   * @return Promise resolving with (partial) item
    */
   public async get(
     id: string, names?: string[]
   ): Promise<TGet | undefined> {
     const item = await this.client.get(id, names)
     if (item) {
-      const data: TGet = decode(item.attrs, this.options.format)
-      data[this.options.key] = item.id as any // TODO: Fix types
+      const data = decode<TGet>(item.attrs, this.options.format)
+      data[this.options.key] = item.id as any // TODO: Fix typings
       return data
     }
     return undefined
@@ -143,10 +167,37 @@ export class Isotope<
    * Delete an item
    *
    * @param item - Item identifier
+   * @param names - Attribute names
    *
    * @return Promise resolving with no result
    */
-  public async delete(id: string): Promise<void> {
-    await this.client.delete(id)
+  public async delete(id: string, names?: string[]): Promise<void> {
+    await this.client.delete(id, names)
+  }
+
+  /**
+   * Retrieve a set of items matching the given SQL query
+   *
+   * @template TSelect - Data type returned by select operation
+   *
+   * @param expr - SQL query builder or expression
+   * @param prev - Pagination token from previous query
+   *
+   * @return Promise resolving with result
+   */
+  public async select<TSelect extends Partial<T> = Partial<T>>(
+    expr: IsotopeSelect<T> | string, prev?: string
+  ): Promise<IsotopeResult<TSelect>> {
+    const { items, next } = await this.client.select(expr.toString(), prev)
+    return {
+      items: items.map(item => {
+        const data = decode<TSelect>(item.attrs, this.options.format)
+        data[this.options.key] = item.id as any // TODO: Fix typings
+        return data
+      }),
+      ...(next
+        ? { next: () => this.select(expr.toString(), next) }
+        : {})
+    }
   }
 }

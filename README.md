@@ -15,7 +15,7 @@
 # Isotopes
 
 A serverless, typed and super lightweight object store that enables storage,
-indexing and querying of JSON documents in SimpleDB using SQL queries.
+indexing and querying of JSON documents in AWS SimpleDB using SQL queries.
 
 ## Installation
 
@@ -43,10 +43,11 @@ export interface Task {
 }
 ```
 
-Next, create an isotope for the type using an **existing** SimpleDB domain. An
-isotope is a thin wrapper around a SimpleDB domain which enable storage and
-retrieval of typed hierarchical data. The domain should be empty, because this
-library assumes JSON encoding for all entries that are part of the domain.
+Next, create an isotope for the type using an **existing** SimpleDB domain.
+Isotope provides a thin wrapper around AWS SimpleDB domains which enables
+storage and retrieval of typed hierarchical data. The domain should be empty,
+because this library assumes JSON encoding for all entries that are part of the
+domain.
 
 ``` ts
 const tasks = new Isotope<Task>({ domain: "...", key: "id" })

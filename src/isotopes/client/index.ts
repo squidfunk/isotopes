@@ -40,8 +40,16 @@ export interface IsotopeClientOptions {
  * Isotope client item
  */
 export interface IsotopeClientItem {
-  id: string,                          /* Record identifier */
-  attrs: IsotopeDictionary             /* Record attributes */
+  id: string,                          /* Item identifier */
+  attrs: IsotopeDictionary             /* Item attributes */
+}
+
+/**
+ * Isotope client item list
+ */
+export interface IsotopeClientItemList {
+  items: IsotopeClientItem[]           /* Item list */
+  next?: string                        /* Pagination token */
 }
 
 /* ----------------------------------------------------------------------------
@@ -156,5 +164,41 @@ export class IsotopeClient {
           Name: name
         }))
     }).promise()
+  }
+
+  /**
+   * Retrieve a set of items matching the given SQL query
+   *
+   * @param expr - SQL query expression
+   * @param next - Token for pagination
+   *
+   * @return Promise resolving with item list
+   */
+  public async select(
+    expr: string, next?: string
+  ): Promise<IsotopeClientItemList> {
+    const { Items, NextToken } = await this.simpledb.select({
+      SelectExpression: expr.toString(),
+      NextToken: next,
+      ConsistentRead: this.options.consistent
+    }).promise()
+
+    /* No items found */
+    if (!Items)
+      return {
+        items: []
+      }
+
+    /* Map identifiers and attributes for each item */
+    return {
+      items: Items.map<IsotopeClientItem>(({ Name: id, Attributes }) => ({
+        id,
+        attrs: Attributes
+          .reduce<IsotopeDictionary>((attrs, { Name, Value }) => ({
+            ...attrs, [Name]: Value
+          }), {})
+      })),
+      next: NextToken
+    }
   }
 }
