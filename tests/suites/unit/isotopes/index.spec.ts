@@ -22,7 +22,7 @@
 
 import {
   Isotope,
-  IsotopeConfiguration
+  IsotopeOptions
 } from "isotopes"
 
 import { chance } from "_/helpers"
@@ -48,8 +48,8 @@ describe("isotopes", () => {
   /* Isotope */
   describe("Isotope", () => {
 
-    /* Client configuration */
-    const config: IsotopeConfiguration<Data> = {
+    /* Client options */
+    const options: IsotopeOptions<Data> = {
       domain: chance.string(),
       key: "id"
     }
@@ -66,7 +66,7 @@ describe("isotopes", () => {
       /* Test: should resolve with data (identifier and attributes) */
       it("should resolve with data (identifier and attributes)", async () => {
         mockIsotopeClientGetWithResult(item)
-        const isotope = new Isotope<Data>(config)
+        const isotope = new Isotope<Data>(options)
         expect(await isotope.get(data.id))
           .toEqual(data)
       })
@@ -74,7 +74,7 @@ describe("isotopes", () => {
       /* Test: should resolve with undefined for non-existent item */
       it("should resolve with undefined for non-existent item", async () => {
         mockIsotopeClientGetWithoutResult()
-        const isotope = new Isotope<Data>(config)
+        const isotope = new Isotope<Data>(options)
         expect(await isotope.get(data.id))
           .toBeUndefined()
       })
@@ -84,7 +84,7 @@ describe("isotopes", () => {
         const errMock = new Error()
         const getMock = mockIsotopeClientGetWithError(errMock)
         try {
-          const isotope = new Isotope(config)
+          const isotope = new Isotope(options)
           await isotope.get(data.id)
           done.fail()
         } catch (err) {
@@ -101,7 +101,7 @@ describe("isotopes", () => {
       /* Test: should resolve with no result */
       it("should resolve with no result", async () => {
         mockIsotopeClientPutWithSuccess()
-        const isotope = new Isotope<Data>(config)
+        const isotope = new Isotope<Data>(options)
         expect(await isotope.put(data))
           .toBeUndefined()
       })
@@ -111,7 +111,7 @@ describe("isotopes", () => {
         const errMock = new Error()
         const putMock = mockIsotopeClientPutWithError(errMock)
         try {
-          const isotope = new Isotope(config)
+          const isotope = new Isotope(options)
           await isotope.put(data)
           done.fail()
         } catch (err) {
@@ -128,7 +128,7 @@ describe("isotopes", () => {
       /* Test: should resolve with no result */
       it("should resolve with no result", async () => {
         mockIsotopeClientDeleteWithSuccess()
-        const isotope = new Isotope<Data>(config)
+        const isotope = new Isotope<Data>(options)
         expect(await isotope.delete(data.id))
           .toBeUndefined()
       })
@@ -138,7 +138,7 @@ describe("isotopes", () => {
         const errMock = new Error()
         const deleteMock = mockIsotopeClientDeleteWithError(errMock)
         try {
-          const isotope = new Isotope(config)
+          const isotope = new Isotope(options)
           await isotope.delete(data.id)
           done.fail()
         } catch (err) {

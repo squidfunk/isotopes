@@ -23,18 +23,23 @@
 import { omit } from "lodash"
 
 import { IsotopeClient } from "isotopes/client"
-import { decode, encode } from "isotopes/format"
+import {
+  decode,
+  encode,
+  IsotopeFormatOptions
+} from "isotopes/format"
 
 /* ----------------------------------------------------------------------------
  * Types
  * ------------------------------------------------------------------------- */
 
 /**
- * Isotope configuration
+ * Isotope options
  *
  * @template T - Data type
  */
-export interface IsotopeConfiguration<T extends {}> {
+export interface IsotopeOptions<T extends {}> {
+  format?: IsotopeFormatOptions        /* Format options */
   domain: string                       /* SimpleDB domain name */
   key: keyof T                         /* SimpleDB item name (primary key) */
 }
@@ -56,18 +61,12 @@ export class Isotope<T extends {}> {
   protected client: IsotopeClient
 
   /**
-   * SimpleDB item name (primary key)
-   */
-  protected key: keyof T
-
-  /**
    * Create an isotope
    *
-   * @param config - Configuration
+   * @param options - Options
    */
-  public constructor(config: IsotopeConfiguration<T>) {
-    this.client = new IsotopeClient(config.domain)
-    this.key    = config.key
+  public constructor(protected options: IsotopeOptions<T>) {
+    this.client = new IsotopeClient(options.domain)
   }
 
   /**
@@ -85,8 +84,8 @@ export class Isotope<T extends {}> {
   ): Promise<T | Partial<T> | undefined> {
     const item = await this.client.get(id, names)
     if (item) {
-      const data: T = decode(item.attrs)
-      data[this.key] = item.id as any // TODO: Fix types
+      const data: T = decode(item.attrs, this.options.format)
+      data[this.options.key] = item.id as any // TODO: Fix types
       return data
     }
     return undefined
@@ -101,13 +100,16 @@ export class Isotope<T extends {}> {
    */
   public async put(data: Partial<T>): Promise<void> {
     await this.client.put(
-      data[this.key].toString(),
-      encode(omit(data, this.key))
+      data[this.options.key].toString(),
+      encode(
+        omit(data, this.options.key),
+        this.options.format
+      )
     )
   }
 
   /**
-   * Delete item
+   * Delete an item
    *
    * @param item - Item identifier
    *

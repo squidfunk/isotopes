@@ -24,4 +24,11 @@
  * Re-exports
  * ------------------------------------------------------------------------- */
 
-export * from "./isotopes"
+export {
+  Isotope,
+  IsotopeOptions
+} from "./isotopes"
+export {
+  IsotopeFormatOptions,
+  IsotopeFormatType
+} from "./isotopes/format"

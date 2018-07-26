@@ -20,7 +20,12 @@
  * IN THE SOFTWARE.
  */
 
-import { decode, encode } from "isotopes/format"
+import {
+  decode,
+  encode,
+  IsotopeFormatOptions,
+  IsotopeFormatType
+} from "isotopes/format"
 
 import { chance } from "_/helpers"
 
@@ -72,6 +77,54 @@ describe("isotopes/format", () => {
         "a.b": JSON.stringify(data.a.b)
       })
     })
+
+    /* with options.primitives = TEXT */
+    describe("with options.primitives = TEXT", () => {
+
+      /* Format options */
+      const options: IsotopeFormatOptions = {
+        primitives: IsotopeFormatType.TEXT
+      }
+
+      /* Test: should flatten nested objects */
+      it("should flatten nested objects", () => {
+        const data = { a: { b: { c: chance.string() } } }
+        expect(Object.keys(encode(data, options)))
+          .toEqual(["a.b.c"])
+      })
+
+      /* Test: should write literal string values */
+      it("should write literal string values", () => {
+        const data = { a: { b: chance.string() } }
+        expect(encode(data, options)).toEqual({
+          "a.b": data.a.b
+        })
+      })
+
+      /* Test: should write literal numeric values */
+      it("should write literal numeric values", () => {
+        const data = { a: { b: chance.integer() } }
+        expect(encode(data, options)).toEqual({
+          "a.b": JSON.stringify(data.a.b)
+        })
+      })
+
+      /* Test: should write literal boolean values */
+      it("should write literal boolean values", () => {
+        const data = { a: { b: chance.bool() } }
+        expect(encode(data, options)).toEqual({
+          "a.b": JSON.stringify(data.a.b)
+        })
+      })
+
+      /* Test: should write serialized array values */
+      it("should write serialized array values", () => {
+        const data = { a: { b: [{ c: chance.string() }] } }
+        expect(encode(data, options)).toEqual({
+          "a.b": JSON.stringify(data.a.b)
+        })
+      })
+    })
   })
 
   /* decode */
@@ -114,6 +167,71 @@ describe("isotopes/format", () => {
       const data = { "a.b": JSON.stringify([{ c: {} }]) }
       expect(decode(data)).toEqual({
         a: { b: [{ c: {} }] }
+      })
+    })
+
+    /* Test: should throw on invalid JSON */
+    it("should throw on invalid JSON", () => {
+      const data = { "a.b": chance.string() }
+      expect(() => {
+        decode(data)
+      }).toThrowError()
+    })
+
+    /* with options.primitives = TEXT */
+    describe("with options.primitives = TEXT", () => {
+
+      /* Format options */
+      const options: IsotopeFormatOptions = {
+        primitives: IsotopeFormatType.TEXT
+      }
+
+      /* Test: should expand nested objects */
+      it("should expand nested objects", () => {
+        const data = { "a.b.c": "{}" }
+        expect(decode(data, options)).toEqual({
+          a: { b: { c: {} } }
+        })
+      })
+
+      /* Test: should read literal string values */
+      it("should read literal string values", () => {
+        const data = { "a.b": chance.string() }
+        expect(decode(data, options)).toEqual({
+          a: { b: data["a.b"] }
+        })
+      })
+
+      /* Test: should read literal numeric values */
+      it("should read literal numeric values", () => {
+        const data = { "a.b": JSON.stringify(chance.integer()) }
+        expect(decode(data, options)).toEqual({
+          a: { b: JSON.parse(data["a.b"]) }
+        })
+      })
+
+      /* Test: should read literal boolean values */
+      it("should read literal boolean values", () => {
+        const data = { "a.b": JSON.stringify(chance.bool()) }
+        expect(decode(data, options)).toEqual({
+          a: { b: JSON.parse(data["a.b"]) }
+        })
+      })
+
+      /* Test: should read serialized array values */
+      it("should read serialized array values", () => {
+        const data = { "a.b": JSON.stringify([{ c: {} }]) }
+        expect(decode(data, options)).toEqual({
+          a: { b: [{ c: {} }] }
+        })
+      })
+
+      /* Test: should not throw on invalid JSON */
+      it("should not throw on invalid JSON", () => {
+        const data = { "a.b": chance.string() }
+        expect(() => {
+          decode(data, options)
+        }).not.toThrowError()
       })
     })
   })
