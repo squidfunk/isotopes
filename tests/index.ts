@@ -20,8 +20,6 @@
  * IN THE SOFTWARE.
  */
 
-import "dotenv/config"
-
 import { SpecReporter } from "jasmine-spec-reporter"
 
 /* ----------------------------------------------------------------------------
