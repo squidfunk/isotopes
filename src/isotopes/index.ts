@@ -78,24 +78,24 @@ export interface IsotopeResult<T extends {}> {
  * generic typing.
  *
  * The first type argument is mandatory and defines the base type. The second
- * and third type arguments can be used to specify what exact types put and get
+ * and third type arguments can be used to specify what exact types PUT and GET
  * operations return but normally they are equal to the base type.
  *
  * @example <caption>Allow complete values only</caption>
  *
  *   new Isotope<Type>
  *
- * @example <caption>Allow partial values in put and get operations</caption>
+ * @example <caption>Allow partial values in PUT and GET operations</caption>
  *
  *   new Isotope<Type, Partial<Type>>
  *
- * @example <caption>Allow partial values in get operations only</caption>
+ * @example <caption>Allow partial values in GET operations only</caption>
  *
  *   new Isotope<Type, Type, Partial<Type>>
  *
  * @template T - Data type
- * @template TGet - Data type expected by put operation
- * @template TPut - Data type returned by get operation
+ * @template TGet - Data type expected by PUT operation
+ * @template TPut - Data type returned by GET operation
  */
 export class Isotope<
   T    extends {},
@@ -184,14 +184,14 @@ export class Isotope<
   /**
    * Retrieve a set of items matching the given SQL query
    *
-   * @template TSelect - Data type returned by select operation
+   * @template TSelect - Data type returned by SELECT operation
    *
    * @param expr - SQL query builder or expression
    * @param prev - Pagination token from previous result
    *
    * @return Promise resolving with result
    */
-  public async select<TSelect extends Partial<T> = Partial<T>>(
+  public async select<TSelect extends TGet = TGet>(
     expr: IsotopeSelect<T> | string, prev?: string
   ): Promise<IsotopeResult<TSelect>> {
     const { items, next } = await this.client.select(expr.toString(), prev)

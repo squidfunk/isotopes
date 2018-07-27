@@ -61,10 +61,10 @@ export interface Task {
 }
 ```
 
-Every type that is handled with *Isotopes* must contain a unique identifier
-which is used for item identification. The identifier *should* be on the first
-level of the type to be stored, all other variables can be arbitrarily nested.
-Next, create an isotope for the type, e.g. for a SimpleDB domain named `tasks`:
+Every type that is handled by *Isotopes* must contain a unique identifier which
+is used for item identification. The identifier *should* be on the first level
+of the type to be stored, all other variables can be arbitrarily nested. Next,
+create an isotope for the type, e.g. for a SimpleDB domain named `tasks`:
 
 ``` ts
 const tasks = new Isotope<Task>({
@@ -78,14 +78,7 @@ const tasks = new Isotope<Task>({
   or destroy domains by itself. However, [Terraform][5] is an excellent tool
   for this.
 
-  [5]: https://www.terraform.io/
-
-### Persist an item
-
-Now we can persist and retrieve instances of our type from the isotope by using
-a simple API, cleverly omitting all the boilerplate that is normally necessary
-for interfacing with SimpleDB. Suppose we have the following item which we want
-to persist:
+Suppose we have the following item:
 
 ``` ts
 const task: Task = {
@@ -99,47 +92,127 @@ const task: Task = {
 }
 ```
 
-Persistence is as simple as:
+We can persist, retrieve and delete items of our defined type from the isotope
+by using a simple API, cleverly omitting all the boilerplate that is normally
+necessary for interfacing with SimpleDB. Persist an item:
 
 ``` ts
-await tasks.put(task)
+await tasks.put(task) // => void
 ```
 
-### Retrieve an item
-
-Items can be retrieved by their primary key (in our example `id`), which we
-defined when initializing the isotope:
+Retrieve an item by primary key (unique identifier, in our example `id`):
 
 ``` ts
-const task: Task = await tasks.get("example")
+const task = await tasks.get("example") // => Task | undefined
 ```
 
-If there's no item to be returned for the given primary key, `task` will be
-`undefined`. Note that specific attributes can be queried by providing the
-object paths for each field of interest as a second parameter, e.g.:
+Delete an item by primary key:
 
 ``` ts
-const task: Partial<Task> = await tasks.get("example", ["active", "props.cpus"])
+await tasks.delete("example") // => void
 ```
 
-Querying specific attributes will make the returned entity a [Partial][6] type.
-Normally it is assumed that (due to the power of TypeScript) all items satisfy
-the basic type constraints and contain all required fields. If you want to do
-partial PUTs and GETs and wonder about type safety,
+Querying items using the [squel][6] query builder interface:
 
-  [6]: https://www.typescriptlang.org/docs/handbook/advanced-types.html
+``` ts
+/* Construct SQL expression with query builder */
+const query = tasks.getQueryBuilder()
+  .where("`active` = ?", true)
+  .order("`props.memory >= ?`", 2048)
+  .limit(100)
+
+/* Query domain and process items */
+let result = await tasks.select(query)
+do {
+  result.items.map(console.log)
+
+  /* Continue with next page, if any */
+  result = result.next
+    ? await result.next()
+    : undefined
+} while (result)
+```
+
+  [5]: https://www.terraform.io/
+  [6]: https://hiddentao.com/squel/
+
+## Advanced usage
 
 ### Error handling
 
-TBD
+All methods except `getQueryBuilder` return Promises, so they are best to be
+used with `async/await` and wrapped in a `try/catch` block for error handling
+purposes:
 
-### Typings
+``` ts
+try {
+  await tasks.put(task)
+} catch (err) {
+  /* Handle error */
+}
+```
 
-TBD
+### Persistence, retrieval and deletion of partial types
+
+By default, *Isotopes* forces only valid entries to be written to SimpleDB which
+means that all non-optional fields need to be defined in the payload. However,
+SimpleDB allows reading and writing of partial attribute values, so it might be
+desirable in some cases to loosen that restriction and allow partial reads and
+writes. *Isotopes* allows both configurations through simple generic typing.
+
+``` ts
+class Isotope<
+ T    extends {},                      /* Data type */
+ TPut extends Partial<T> = T,          /* Data type expected by PUT operation */
+ TGet extends Partial<T> = TPut        /* Data type returned by PUT operation */
+> {}
+```
+
+The first type argument is mandatory and defines the base type. The second
+and third type arguments can be used to specify what exact types PUT and GET
+operations return but normally they are equal to the base type.
+
+Allow complete values only:
+
+``` ts
+new Isotope<Task>(...)
+```
+
+Allow partial values in PUT and GET operations:
+
+``` ts
+new Isotope<Task, Partial<Task>>(...)
+```
+
+Allow partial values in GET operations only:
+
+``` ts
+new Isotope<Type, Type, Partial<Type>>(...)
+```
+
+Furthermore, SELECT operations are assumed to return the same type as GET
+operations. Since this may be different on a case-by-case basis (depending on
+the specific SQL query), it may be overriden on a per-query basis:
+
+``` ts
+tasks.select<Partial<Task>>(...)
+```
 
 ### Encodings
 
-#### JSON <small>default</small>
+The encoding can be set when creating the isotope, e.g.:
+
+``` ts
+const tasks = new Isotope<Task>({
+  format: { encoding: "text" },
+  domain: "tasks",
+  key: "id"
+})
+```
+
+#### JSON <small>default, recommended</small>
+
+> `options.format.encoding: "json"`
 
 All values are JSON-encoded, which means that strings are double-quoted,
 whereas numbers and booleans are written literally:
@@ -156,7 +229,16 @@ whereas numbers and booleans are written literally:
 }
 ```
 
-#### Text <small>default</small>
+If you don't plan to use the SimpleDB domain from a non-*Isotope* environment,
+you should always stick with JSON-encoding because it is more safe than text
+encoding and comes with no limitations.
+
+#### Text
+
+> `options.format.encoding: "text"`
+
+*Isotopes* provides the ability to use an alternate encoding and store strings
+as literals so they are written without quotes:
 
 ``` json
 {
@@ -168,6 +250,42 @@ whereas numbers and booleans are written literally:
     { "Name": "props.memory", "Value": "2048" }
   ]
 }
+```
+
+When decoding the data, we intercept `JSON.parse` assuming that we encountered
+a literal string if it fails to decode. It's a hack and yes, imposes some
+limitations:
+
+1. Numbers that are encoded as strings (e.g. house numbers, because they can
+   exhibit values as `2A` etc.) are interpreted as numbers when decoded with
+   `JSON.parse`. *Countermeasure*: ensure that numbers are typed as numbers, or
+   string fields contain at least one non-number character.
+
+2. If strings accidentally contain valid JSON, e.g. `{}`, the value is parsed
+   as JSON and the field gets assigned that precise value. This also breaks
+   type safety. *Countermeasure*: ensure that your strings are never valid JSON
+   by prepending some character that makes `JSON.parse` fail.
+
+As enforcing as those restrictions may seem to be, it is often true that
+the properties and characteristics of the data are known a-priori and those
+special cases can be ruled out with great certainty. This also means that
+querying the data from other parts of your system gets easier as string
+values don't need to be enclosed into quotes (and don't start thinking about
+LIKE queries) which is far more user-friendly.
+
+### Consistency
+
+> `options.client.consistency: true`
+
+Strong consistency for GET and SELECT operations can be enabled when creating
+an isotope:
+
+``` ts
+const tasks = new Isotope<Task>({
+  client: { consistency: true },
+  domain: "tasks",
+  key: "id"
+})
 ```
 
 ## License
