@@ -20,6 +20,7 @@
  * IN THE SOFTWARE.
  */
 
+import { isArray, isObject } from "lodash"
 import { Expression, select, Select } from "squel"
 
 import { IsotopeOptions } from "isotopes"
@@ -62,16 +63,20 @@ export class IsotopeSelect<T extends {}> {
    *
    * @return Instance
    */
-  public where(condition: string | Expression, ...args: string[]): this {
+  public where(condition: string | Expression, ...args: any[]): this {
     if (typeof this.options.format === "undefined" ||
         this.options.format.encoding === "json") {
       this.query.where(condition, ...args.map(arg => {
         return typeof condition === "string" && condition.match(/ LIKE /i)
-          ? arg.replace(/(^(?!%)|([^%]|\\%)$)/g, (_$0, $1) => `${$1}\"`)
+          ? arg.replace(/(^(?!%)|([^%]|\\%)$)/g, (...$: any[]) => `${$[1]}\"`)
           : JSON.stringify(arg)
       }))
     } else {
-      this.query.where(condition, ...args)
+      this.query.where(condition, ...args.map(arg => {
+        return isArray(arg) || isObject(arg)
+          ? JSON.stringify(arg)
+          : arg.toString()
+      }))
     }
     return this
   }

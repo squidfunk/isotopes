@@ -59,7 +59,7 @@ describe("isotopes", () => {
   /* Isotope */
   describe("Isotope", () => {
 
-    /* Client options */
+    /* Options */
     const options: IsotopeOptions<Data> = {
       domain: chance.string(),
       key: "id"
