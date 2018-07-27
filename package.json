@@ -15,7 +15,7 @@
     "url": "https://github.com/squidfunk/isotopes/",
     "email": "martin.donath@squidfunk.com"
   },
-  "private": true,
+  "license": "MIT",
   "author": {
     "name": "Martin Donath",
     "email": "martin.donath@squidfunk.com"
