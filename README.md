@@ -198,7 +198,7 @@ the specific SQL query), it may be overriden on a per-query basis:
 tasks.select<Partial<Task>>(...)
 ```
 
-### Encodings
+### Encoding
 
 The encoding can be set when creating the isotope, e.g.:
 

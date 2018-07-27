@@ -24,6 +24,7 @@
 # NPM-related
 /node_modules
 /npm-debug.log*
+*.tgz
 
 # Source files
 /src
@@ -38,6 +39,7 @@
 .editorconfig
 .gitignore
 .npmignore
+.nycrc
 .travis.yml
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
