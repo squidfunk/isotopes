@@ -197,5 +197,57 @@ describe("isotopes/select", () => {
         })
       })
     })
+
+    /* #order */
+    describe("#order", () => {
+
+      /* Options */
+      const options: IsotopeOptions<Data> = {
+        domain: "domain",
+        key: "id"
+      }
+
+      /* Test: should return items in ascending order by default */
+      it("should return items in ascending order by default", () => {
+        const select = new IsotopeSelect(options)
+          .order("`foo`")
+        expect(select.toString())
+          .toEqual("SELECT * FROM `domain` ORDER BY `foo` ASC")
+      })
+
+      /* Test: should order items ascending */
+      it("should return items in ascending order", () => {
+        const select = new IsotopeSelect(options)
+          .order("`foo`", "asc")
+        expect(select.toString())
+          .toEqual("SELECT * FROM `domain` ORDER BY `foo` ASC")
+      })
+
+      /* Test: should order items descending */
+      it("should return items in descending order", () => {
+        const select = new IsotopeSelect(options)
+          .order("`foo`", "desc")
+        expect(select.toString())
+          .toEqual("SELECT * FROM `domain` ORDER BY `foo` DESC")
+      })
+    })
+
+    /* #limit */
+    describe("#limit", () => {
+
+      /* Options */
+      const options: IsotopeOptions<Data> = {
+        domain: "domain",
+        key: "id"
+      }
+
+      /* Test: should limit the number of items returned */
+      it("should limit the number of items returned", () => {
+        const select = new IsotopeSelect(options)
+          .limit(100)
+        expect(select.toString())
+          .toEqual("SELECT * FROM `domain` LIMIT 100")
+      })
+    })
   })
 })

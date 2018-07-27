@@ -253,7 +253,7 @@ describe("isotopes/client", () => {
 
       /* Pagination token and result */
       const token  = chance.string()
-      const result = range(1, chance.integer({ min: 1, max: 10 }))
+      const result = range(0, chance.integer({ min: 1, max: 10 }))
         .map<IsotopeClientItem>(() => {
           const { id, random } = mockData()
           return mockIsotopeClientItem(id, random)
