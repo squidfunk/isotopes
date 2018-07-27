@@ -21,11 +21,16 @@
  */
 
 import { SimpleDB } from "aws-sdk"
-import { toPairs } from "lodash"
+import { range, toPairs } from "lodash"
 
-import { IsotopeClient } from "isotopes/client"
+import {
+  IsotopeClient,
+  IsotopeClientItem
+} from "isotopes/client"
 
 import { chance } from "_/helpers"
+import { mockData } from "_/mocks/data"
+import { mockIsotopeClientItem } from "_/mocks/isotopes/client"
 import {
   mockSimpleDBDeleteAttributesWithError,
   mockSimpleDBDeleteAttributesWithSuccess,
@@ -34,9 +39,13 @@ import {
   mockSimpleDBGetAttributesWithResult,
   mockSimpleDBPutAttributesWithError,
   mockSimpleDBPutAttributesWithSuccess,
+  mockSimpleDBSelectWithError,
+  mockSimpleDBSelectWithoutResult,
+  mockSimpleDBSelectWithResult,
   restoreSimpleDBDeleteAttributes,
   restoreSimpleDBGetAttributes,
-  restoreSimpleDBPutAttributes
+  restoreSimpleDBPutAttributes,
+  restoreSimpleDBSelect
 } from "_/mocks/vendor/aws-sdk"
 
 /* ----------------------------------------------------------------------------
@@ -52,40 +61,36 @@ describe("isotopes/client", () => {
     /* Client configuration */
     const domain = chance.string()
 
-    /* Record identifier and attributes */
-    const id = chance.string()
-    const attrs = {
-      [chance.string()]: chance.string(),
-      [chance.string()]: chance.string(),
-      [chance.string()]: chance.string()
-    }
-
     /* #get */
     describe("#get", () => {
+
+      /* Data and item */
+      const { id, random } = mockData()
+      const { attrs } = mockIsotopeClientItem(id, random)
 
       /* Restore AWS mocks */
       afterEach(() => {
         restoreSimpleDBGetAttributes()
       })
 
-      /* Test: should resolve with identifier and attributes */
-      it("should resolve with identifier and attributes", async () => {
+      /* Test: should resolve with item with attributes */
+      it("should resolve with item with attributes", async () => {
         mockSimpleDBGetAttributesWithResult(attrs)
         const client = new IsotopeClient(domain)
         const item = await client.get(id)
         expect(item).toEqual({ id, attrs })
       })
 
-      /* Test: should resolve with attributes for empty item */
-      it("should resolve with empty attributes for empty item", async () => {
+      /* Test: should resolve with item without attributes */
+      it("should resolve with item without attributes", async () => {
         mockSimpleDBGetAttributesWithResult()
         const client = new IsotopeClient(domain)
         const item = await client.get(id)
         expect(item).toEqual({ id, attrs: {} })
       })
 
-      /* Test: should resolve with undefined for non-existent item */
-      it("should resolve with undefined for non-existent item", async () => {
+      /* Test: should resolve non-existent item with undefined */
+      it("should resolve non-existent item with undefined", async () => {
         mockSimpleDBGetAttributesWithoutResult()
         const client = new IsotopeClient(domain)
         const item = await client.get(id)
@@ -137,6 +142,10 @@ describe("isotopes/client", () => {
     /* #put */
     describe("#put", () => {
 
+      /* Data and item */
+      const { id, random } = mockData()
+      const { attrs } = mockIsotopeClientItem(id, random)
+
       /* Restore AWS mocks */
       afterEach(() => {
         restoreSimpleDBPutAttributes()
@@ -187,6 +196,10 @@ describe("isotopes/client", () => {
     /* #delete */
     describe("#delete", () => {
 
+      /* Data and item */
+      const { id, random } = mockData()
+      const { attrs } = mockIsotopeClientItem(id, random)
+
       /* Restore AWS mocks */
       afterEach(() => {
         restoreSimpleDBDeleteAttributes()
@@ -226,6 +239,93 @@ describe("isotopes/client", () => {
           done.fail()
         } catch (err) {
           expect(deleteAttributesMock).toHaveBeenCalled()
+          expect(err).toBe(errMock)
+          done()
+        }
+      })
+    })
+
+    /* #select */
+    describe("#select", () => {
+
+      /* SQL query expression */
+      const expr = chance.string()
+
+      /* Pagination token and result */
+      const token  = chance.string()
+      const result = range(1, chance.integer({ min: 1, max: 10 }))
+        .map<IsotopeClientItem>(() => {
+          const { id, random } = mockData()
+          return mockIsotopeClientItem(id, random)
+        })
+
+      /* Restore AWS mocks */
+      afterEach(() => {
+        restoreSimpleDBSelect()
+      })
+
+      /* Test: should resolve with item list */
+      it("should resolve with item list", async () => {
+        mockSimpleDBSelectWithResult(result)
+        const client = new IsotopeClient(domain)
+        const { items } = await client.select(expr)
+        expect(items).toEqual(result)
+      })
+
+      /* Test: should resolve with pagination token if given */
+      it("should resolve with pagination token if given", async () => {
+        mockSimpleDBSelectWithResult(result, token)
+        const client = new IsotopeClient(domain)
+        const { next } = await client.select(expr)
+        expect(next).toEqual(token)
+      })
+
+      /* Test: should resolve without pagination token */
+      it("should resolve without pagination token", async () => {
+        mockSimpleDBSelectWithResult(result)
+        const client = new IsotopeClient(domain)
+        const { next } = await client.select(expr)
+        expect(next).toBeUndefined()
+      })
+
+      /* Test: should resolve non-match with empty item list */
+      it("should resolve non-match with empty item list", async () => {
+        mockSimpleDBSelectWithoutResult()
+        const client = new IsotopeClient(domain)
+        const { items } = await client.select(expr)
+        expect(items).toEqual([])
+      })
+
+      /* Test: should resolve non-match without pagination token */
+      it("should resolve non-match without pagination token", async () => {
+        mockSimpleDBSelectWithoutResult()
+        const client = new IsotopeClient(domain)
+        const { next } = await client.select(expr)
+        expect(next).toBeUndefined()
+      })
+
+      /* Test: should make consistent reads if enabled */
+      it("should make consistent reads if enabled", async () => {
+        const selectMock = mockSimpleDBSelectWithResult(result)
+        const client = new IsotopeClient(domain, { consistent: true })
+        await client.select(expr, token)
+        expect(selectMock).toHaveBeenCalledWith({
+          SelectExpression: expr,
+          NextToken: token,
+          ConsistentRead: true
+        })
+      })
+
+      /* Test: should reject on AWS SimpleDB error */
+      it("should reject on AWS SimpleDB error", async done => {
+        const errMock = new Error()
+        const selectMock = mockSimpleDBSelectWithError(errMock)
+        try {
+          const client = new IsotopeClient(domain)
+          await client.select(chance.string())
+          done.fail()
+        } catch (err) {
+          expect(selectMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
           done()
         }

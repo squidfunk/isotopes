@@ -20,10 +20,18 @@
  * IN THE SOFTWARE.
  */
 
+import { range } from "lodash"
+
 import {
   Isotope,
   IsotopeOptions
 } from "isotopes"
+import {
+  IsotopeClientItem
+} from "isotopes/client"
+import {
+  IsotopeSelect
+} from "isotopes/select"
 
 import { chance } from "_/helpers"
 import { Data, mockData } from "_/mocks/data"
@@ -36,6 +44,9 @@ import {
   mockIsotopeClientItem,
   mockIsotopeClientPutWithError,
   mockIsotopeClientPutWithSuccess,
+  mockIsotopeClientSelectWithError,
+  mockIsotopeClientSelectWithoutResult,
+  mockIsotopeClientSelectWithResult
 } from "_/mocks/isotopes/client"
 
 /* ----------------------------------------------------------------------------
@@ -54,25 +65,41 @@ describe("isotopes", () => {
       key: "id"
     }
 
-    /* Dummy data */
-    const data = mockData()
+    /* #getQueryBuilder */
+    describe("#getQueryBuilder", () => {
+
+      /* Test: should return an instance of query builder */
+      it("should return an instance of query builder", () => {
+        const isotope = new Isotope<Data>(options)
+        expect(isotope.getQueryBuilder())
+          .toEqual(jasmine.any(IsotopeSelect))
+      })
+
+      /* Test: should not return the same instance twice */
+      it("should not return the same instance twice", () => {
+        const isotope = new Isotope<Data>(options)
+        expect(isotope.getQueryBuilder())
+          .not.toBe(isotope.getQueryBuilder())
+      })
+    })
 
     /* #get */
     describe("#get", () => {
 
       /* Dummy item constructed from data */
+      const data = mockData()
       const item = mockIsotopeClientItem(data.id, { random: data.random })
 
-      /* Test: should resolve with data (identifier and attributes) */
-      it("should resolve with data (identifier and attributes)", async () => {
+      /* Test: should resolve with item */
+      it("should resolve with item", async () => {
         mockIsotopeClientGetWithResult(item)
         const isotope = new Isotope<Data>(options)
         expect(await isotope.get(data.id))
           .toEqual(data)
       })
 
-      /* Test: should resolve with undefined for non-existent item */
-      it("should resolve with undefined for non-existent item", async () => {
+      /* Test: should resolve non-existent item with undefined */
+      it("should resolve non-existent item with undefined", async () => {
         mockIsotopeClientGetWithoutResult()
         const isotope = new Isotope<Data>(options)
         expect(await isotope.get(data.id))
@@ -84,7 +111,7 @@ describe("isotopes", () => {
         const errMock = new Error()
         const getMock = mockIsotopeClientGetWithError(errMock)
         try {
-          const isotope = new Isotope(options)
+          const isotope = new Isotope<Data>(options)
           await isotope.get(data.id)
           done.fail()
         } catch (err) {
@@ -97,6 +124,9 @@ describe("isotopes", () => {
 
     /* #put */
     describe("#put", () => {
+
+      /* Dummy data */
+      const data = mockData()
 
       /* Test: should resolve with no result */
       it("should resolve with no result", async () => {
@@ -111,7 +141,7 @@ describe("isotopes", () => {
         const errMock = new Error()
         const putMock = mockIsotopeClientPutWithError(errMock)
         try {
-          const isotope = new Isotope(options)
+          const isotope = new Isotope<Data>(options)
           await isotope.put(data)
           done.fail()
         } catch (err) {
@@ -125,11 +155,14 @@ describe("isotopes", () => {
     /* #delete */
     describe("#delete", () => {
 
+      /* Dummy identifier */
+      const { id } = mockData()
+
       /* Test: should resolve with no result */
       it("should resolve with no result", async () => {
         mockIsotopeClientDeleteWithSuccess()
         const isotope = new Isotope<Data>(options)
-        expect(await isotope.delete(data.id))
+        expect(await isotope.delete(id))
           .toBeUndefined()
       })
 
@@ -138,11 +171,88 @@ describe("isotopes", () => {
         const errMock = new Error()
         const deleteMock = mockIsotopeClientDeleteWithError(errMock)
         try {
-          const isotope = new Isotope(options)
-          await isotope.delete(data.id)
+          const isotope = new Isotope<Data>(options)
+          await isotope.delete(id)
           done.fail()
         } catch (err) {
           expect(deleteMock).toHaveBeenCalled()
+          expect(err).toBe(errMock)
+          done()
+        }
+      })
+    })
+
+    /* #select */
+    describe("#select", () => {
+
+      /* SQL query expression and mock data */
+      const expr = chance.string()
+      const data = range(1, chance.integer({ min: 1, max: 10 }))
+        .map<Data>(() => mockData())
+
+      /* Pagination token and result */
+      const token  = chance.string()
+      const result = data.map<IsotopeClientItem>(({ id, random }) =>
+        mockIsotopeClientItem(id, { random })
+      )
+
+      /* Test: should resolve with item list */
+      it("should resolve with item list", async () => {
+        mockIsotopeClientSelectWithResult(result)
+        const isotope = new Isotope<Data>(options)
+        const { items } = await isotope.select(expr)
+        expect(items).toEqual(data)
+      })
+
+      /* Test: should resolve with pagination continuation if given */
+      it("should resolve with pagination continuation if given", async () => {
+        const selectMock = mockIsotopeClientSelectWithResult(result, token)
+        const isotope = new Isotope<Data>(options)
+        const { next } = await isotope.select(expr)
+        expect(next).toEqual(jasmine.any(Function))
+        if (next)
+          expect(await next()).toEqual({
+            items: data,
+            next: jasmine.any(Function)
+          })
+        expect(selectMock).toHaveBeenCalledTimes(2)
+      })
+
+      /* Test: should resolve without pagination token */
+      it("should resolve without pagination token", async () => {
+        mockIsotopeClientSelectWithResult(result)
+        const isotope = new Isotope<Data>(options)
+        const { next } = await isotope.select(expr)
+        expect(next).toBeUndefined()
+      })
+
+      /* Test: should resolve non-match with empty item list */
+      it("should resolve non-match with empty item list", async () => {
+        mockIsotopeClientSelectWithoutResult()
+        const isotope = new Isotope<Data>(options)
+        const { items } = await isotope.select(expr)
+        expect(items).toEqual([])
+      })
+
+      /* Test: should resolve non-match without pagination continuation */
+      it("should resolve non-match without pagination continuation",
+        async () => {
+          mockIsotopeClientSelectWithoutResult()
+          const isotope = new Isotope<Data>(options)
+          const { next } = await isotope.select(expr)
+          expect(next).toBeUndefined()
+        })
+
+      /* Test: should reject on client error */
+      it("should reject on client error", async done => {
+        const errMock = new Error()
+        const selectMock = mockIsotopeClientSelectWithError(errMock)
+        try {
+          const isotope = new Isotope<Data>(options)
+          await isotope.select(expr)
+          done.fail()
+        } catch (err) {
+          expect(selectMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
           done()
         }

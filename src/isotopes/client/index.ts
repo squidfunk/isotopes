@@ -178,7 +178,7 @@ export class IsotopeClient {
     expr: string, next?: string
   ): Promise<IsotopeClientItemList> {
     const { Items, NextToken } = await this.simpledb.select({
-      SelectExpression: expr.toString(),
+      SelectExpression: expr,
       NextToken: next,
       ConsistentRead: this.options.consistent
     }).promise()

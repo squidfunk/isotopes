@@ -35,18 +35,17 @@ export interface IsotopeDictionary {
 }
 
 /**
- * Isotope format method
+ * Isotope format encoding
  */
-export enum IsotopeFormatMethod {
-  JSON = "JSON",                       /* Default JSON encoding */
-  TEXT = "TEXT"                        /* Strings are written as literals */
-}
+export type IsotopeFormatEncoding =
+  | "json"                             /* Default JSON encoding */
+  | "text"                             /* Strings are encoded as literals */
 
 /**
  * Isotope format options
  */
 export interface IsotopeFormatOptions {
-  method: IsotopeFormatMethod          /* Format method */
+  encoding: IsotopeFormatEncoding      /* Format encoding */
 }
 
 /* ----------------------------------------------------------------------------
@@ -57,7 +56,7 @@ export interface IsotopeFormatOptions {
  * Default format options
  */
 const defaultOptions: IsotopeFormatOptions = {
-  method: IsotopeFormatMethod.JSON
+  encoding: "json"
 }
 
 /* ----------------------------------------------------------------------------
@@ -106,7 +105,7 @@ export function encode<T extends {}>(
 ): IsotopeDictionary {
   const dict = flatten(data, { safe: true })
   return mapValues(dict, value =>
-    options.method === IsotopeFormatMethod.JSON || typeof value !== "string"
+    options.encoding === "json" || typeof value !== "string"
       ? JSON.stringify(value)
       : value
   )
@@ -132,7 +131,7 @@ export function decode<T extends {}>(
     try {
       return JSON.parse(value)
     } catch (err) {
-      if (options.method === IsotopeFormatMethod.TEXT)
+      if (options.encoding === "text")
         return value
       throw err
     }

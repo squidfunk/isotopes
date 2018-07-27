@@ -26,8 +26,6 @@ import {
 } from "isotopes/client"
 import { encode } from "isotopes/format"
 
-import { chance } from "_/helpers"
-
 /* ----------------------------------------------------------------------------
  * Data
  * ------------------------------------------------------------------------- */
@@ -43,7 +41,7 @@ import { chance } from "_/helpers"
  * @return Item
  */
 export function mockIsotopeClientItem<T>(
-  id: string = chance.string(), data: T
+  id: string, data: T
 ): IsotopeClientItem {
   return {
     id,
@@ -178,4 +176,59 @@ export function mockIsotopeClientDeleteWithError(
   err: Error = new Error("delete")
 ): jasmine.Spy {
   return mockIsotopeClientDelete(() => Promise.reject(err))
+}
+
+/* ------------------------------------------------------------------------- */
+
+/**
+ * Mock IsotopeClient.select
+ *
+ * @param promise - Promise returned by client
+ *
+ * @return Jasmine spy
+ */
+function mockIsotopeClientSelect<T>(
+  promise: () => Promise<T>
+): jasmine.Spy {
+  return spyOn(IsotopeClient.prototype, "select")
+    .and.callFake(promise)
+}
+
+/**
+ * Mock IsotopeClient.select returning with result
+ *
+ * @param list - Item list
+ *
+ * @return Jasmine spy
+ */
+export function mockIsotopeClientSelectWithResult(
+  items: IsotopeClientItem[], next?: string
+): jasmine.Spy {
+  return mockIsotopeClientSelect(() => Promise.resolve({
+    items, next
+  }))
+}
+
+/**
+ * Mock IsotopeClient.select returning without result
+ *
+ * @return Jasmine spy
+ */
+export function mockIsotopeClientSelectWithoutResult(): jasmine.Spy {
+  return mockIsotopeClientSelect(() => Promise.resolve({
+    items: []
+  }))
+}
+
+/**
+ * Mock IsotopeClient.select throwing an error
+ *
+ * @param err - Error to be thrown
+ *
+ * @return Jasmine spy
+ */
+export function mockIsotopeClientSelectWithError(
+  err: Error = new Error("select")
+): jasmine.Spy {
+  return mockIsotopeClientSelect(() => Promise.reject(err))
 }

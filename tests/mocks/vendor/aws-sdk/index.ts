@@ -27,3 +27,4 @@
 export * from "./simpledb/delete-attributes"
 export * from "./simpledb/get-attributes"
 export * from "./simpledb/put-attributes"
+export * from "./simpledb/select"

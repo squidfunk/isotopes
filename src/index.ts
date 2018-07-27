@@ -32,6 +32,5 @@ export {
   IsotopeClientOptions
 } from "./isotopes/client"
 export {
-  IsotopeFormatOptions,
-  IsotopeFormatMethod
+  IsotopeFormatOptions
 } from "./isotopes/format"

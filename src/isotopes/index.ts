@@ -181,7 +181,7 @@ export class Isotope<
    * @template TSelect - Data type returned by select operation
    *
    * @param expr - SQL query builder or expression
-   * @param prev - Pagination token from previous query
+   * @param prev - Pagination token from previous result
    *
    * @return Promise resolving with result
    */

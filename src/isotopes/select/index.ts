@@ -23,7 +23,6 @@
 import { Expression, select, Select } from "squel"
 
 import { IsotopeOptions } from "isotopes"
-import { IsotopeFormatMethod } from "isotopes/format"
 
 /* ----------------------------------------------------------------------------
  * Class
@@ -43,11 +42,11 @@ export class IsotopeSelect<T extends {}> {
    * Create an SQL query builder
    *
    * @param options - Options
-   * @param sql - Squel instance
+   * @param query - Squel instance
    */
   public constructor(
     protected options: IsotopeOptions<T>,
-    protected sql: Select = select({
+    protected query: Select = select({
       autoQuoteTableNames: true,
       autoQuoteFieldNames: true
     }).from(options.domain)
@@ -65,14 +64,14 @@ export class IsotopeSelect<T extends {}> {
    */
   public where(condition: string | Expression, ...args: string[]): this {
     if (typeof this.options.format === "undefined" ||
-        this.options.format.method === IsotopeFormatMethod.JSON) {
-      this.sql.where(condition, ...args.map(arg => {
+        this.options.format.encoding === "json") {
+      this.query.where(condition, ...args.map(arg => {
         return typeof condition === "string" && condition.match(/ LIKE /i)
           ? arg.replace(/(^(?!%)|([^%]|\\%)$)/g, (_$0, $1) => `${$1}\"`)
           : JSON.stringify(arg)
       }))
     } else {
-      this.sql.where(condition, ...args)
+      this.query.where(condition, ...args)
     }
     return this
   }
@@ -85,8 +84,8 @@ export class IsotopeSelect<T extends {}> {
    *
    * @return Instance
    */
-  public order(field: string, direction?: "ASC" | "DESC"): this {
-    this.sql.order(field, !direction || direction === "ASC")
+  public order(field: string, direction?: "asc" | "desc"): this {
+    this.query.order(field, !direction || direction === "asc")
     return this
   }
 
@@ -98,7 +97,7 @@ export class IsotopeSelect<T extends {}> {
    * @return Instance
    */
   public limit(count: number): this {
-    this.sql.limit(count)
+    this.query.limit(count)
     return this
   }
 
@@ -108,6 +107,6 @@ export class IsotopeSelect<T extends {}> {
    * @return SQL query string
    */
   public toString() {
-    return this.sql.toString()
+    return this.query.toString()
   }
 }

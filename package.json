@@ -22,14 +22,11 @@
     "clean": "make clean",
     "lint": "make lint",
     "test": "make test",
-    "test:acceptance": "make test-acceptance",
     "watch": "make watch"
   },
   "dependencies": {
     "flat": "^4.1.0",
     "lodash": "^4.17.10",
-    "minimatch": "^3.0.4",
-    "reflect-metadata": "^0.1.12",
     "squel": "^5.12.2"
   },
   "devDependencies": {
@@ -38,14 +35,11 @@
     "@types/flat": "0.0.28",
     "@types/jasmine": "^2.8.6",
     "@types/lodash": "^4.14.113",
-    "@types/minimatch": "^3.0.3",
     "@types/node": "^9.6.2",
-    "@types/uuid": "^3.4.3",
     "aws-sdk": "^2.279.1",
     "aws-sdk-mock": "^2.0.0",
     "chance": "^1.0.13",
     "codecov": "^3.0.4",
-    "dotenv": "^5.0.1",
     "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.2.1",
     "nodemon": "^1.18.3",
