@@ -135,6 +135,12 @@ export class Isotope<
    * @return Promise resolving with (partial) item
    */
   public async get(
+    id: string
+  ): Promise<TGet | undefined>
+  public async get(
+    id: string, names: string[]
+  ): Promise<Partial<TGet> | undefined>
+  public async get(
     id: string, names?: string[]
   ): Promise<TGet | undefined> {
     const item = await this.client.get(id, names)

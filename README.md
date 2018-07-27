@@ -15,50 +15,80 @@
 # Isotopes
 
 A serverless, typed and super lightweight object store that enables storage,
-indexing and querying of JSON documents in AWS SimpleDB using SQL queries.
+indexing and querying of JSON documents in [AWS SimpleDB][1] using SQL queries.
+*Isotopes* is just perfect for small to medium-sized datasets, especially for
+indexing data from other AWS services for flexible querying. It can easily be
+run from within [AWS Lambda][2] and reduces the boilerplate that is necessary
+to interface with SimpleDB to an absolute minimum.
+
+  [1]: https://aws.amazon.com/de/simpledb/
+  [2]: https://aws.amazon.com/de/lambda/
 
 ## Installation
 
 ``` sh
-npm install isotopes
+npm install isotopes aws-sdk
 ```
 
-TypeScript typings are provided as part of the package.
+TypeScript typings are provided as part of the package, so no need to install a
+separate package. However, the [aws-sdk][3] is listed as a peer dependency, so
+make sure it is installed. Note that when you run *Isotopes* from within AWS
+Lambda the SDK is already installed.
+
+  [3]: https://www.npmjs.com/package/aws-sdk
 
 ## Usage
+
+> Note: the following instructions are intended for usage from TypeScript. You
+  can also use *Isotopes* from plain JavaScript by omitting all typings from
+  the examples, but what's the point? [Learn TypeScript][4], it's awesome!
+
+  [4]: https://basarat.gitbooks.io/typescript/
 
 First, define a TypeScript interface for the data you want to store, e.g. a
 type for running a task on a cluster:
 
 ``` ts
 export interface Task {
-  id: string
-  active: boolean
+  id: string                           /* Unique identifier */
+  active: boolean                      /* Whether the task can be scheduled */
   props: {
-    image: string
-    cpus: number
-    memory: number
-    command?: string
+    image: string                      /* Docker image to use */
+    cpus: number                       /* Number of CPUs */
+    memory: number                     /* Reserved memory */
+    command?: string                   /* Command override */
   }
 }
 ```
 
-Next, create an isotope for the type using an **existing** SimpleDB domain.
-Isotope provides a thin wrapper around AWS SimpleDB domains which enables
-storage and retrieval of typed hierarchical data. The domain should be empty,
-because this library assumes JSON encoding for all entries that are part of the
-domain.
+Every type that is handled with *Isotopes* must contain a unique identifier
+which is used for item identification. The identifier *should* be on the first
+level of the type to be stored, all other variables can be arbitrarily nested.
+Next, create an isotope for the type, e.g. for a SimpleDB domain named `tasks`:
 
 ``` ts
-const tasks = new Isotope<Task>({ domain: "...", key: "id" })
+const tasks = new Isotope<Task>({
+  domain: "tasks",
+  key: "id"
+})
 ```
+
+> Note: *Isotopes* provides a thin wrapper around AWS SimpleDB domains which
+  enables storage and retrieval of typed hierarchical data, but it won't create
+  or destroy domains by itself. However, [Terraform][5] is an excellent tool
+  for this.
+
+  [5]: https://www.terraform.io/
+
+### Persist an item
 
 Now we can persist and retrieve instances of our type from the isotope by using
 a simple API, cleverly omitting all the boilerplate that is normally necessary
-for interfacing with SimpleDB. Persistence is as simple as:
+for interfacing with SimpleDB. Suppose we have the following item which we want
+to persist:
 
 ``` ts
-await tasks.put({
+const task: Task = {
   id: "example",
   active: true,
   props: {
@@ -66,8 +96,50 @@ await tasks.put({
     cpus: 2,
     memory: 2048
   }
-})
+}
 ```
+
+Persistence is as simple as:
+
+``` ts
+await tasks.put(task)
+```
+
+### Retrieve an item
+
+Items can be retrieved by their primary key (in our example `id`), which we
+defined when initializing the isotope:
+
+``` ts
+const task: Task = await tasks.get("example")
+```
+
+If there's no item to be returned for the given primary key, `task` will be
+`undefined`. Note that specific attributes can be queried by providing the
+object paths for each field of interest as a second parameter, e.g.:
+
+``` ts
+const task: Partial<Task> = await tasks.get("example", ["active", "props.cpus"])
+```
+
+Querying specific attributes will make the returned entity a [Partial][6] type.
+Normally it is assumed that (due to the power of TypeScript) all items satisfy
+the basic type constraints and contain all required fields. If you want to do
+partial PUTs and GETs and wonder about type safety,
+
+  [6]: https://www.typescriptlang.org/docs/handbook/advanced-types.html
+
+### Error handling
+
+TBD
+
+### Typings
+
+TBD
+
+### Encodings
+
+#### JSON <small>default</small>
 
 All values are JSON-encoded, which means that strings are double-quoted,
 whereas numbers and booleans are written literally:
@@ -84,13 +156,19 @@ whereas numbers and booleans are written literally:
 }
 ```
 
-Retrieval is equally straight forward:
+#### Text <small>default</small>
 
-``` ts
-const task = await tasks.get("example")
+``` json
+{
+  "Name": "example",
+  "Attributes": [
+    { "Name": "active", "Value": "true" },
+    { "Name": "props.image", "Value": "busybox" },
+    { "Name": "props.cpus", "Value": "2" },
+    { "Name": "props.memory", "Value": "2048" }
+  ]
+}
 ```
-
-TBD
 
 ## License
 
