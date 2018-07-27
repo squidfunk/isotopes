@@ -30,6 +30,12 @@ to interface with SimpleDB to an absolute minimum.
 npm install isotopes aws-sdk
 ```
 
+In your project:
+
+``` ts
+import { Isotope } from "isotopes"
+```
+
 TypeScript typings are provided as part of the package, so no need to install a
 separate package. However, the [aws-sdk][3] is listed as a peer dependency, so
 make sure it is installed. Note that when you run *Isotopes* from within AWS
