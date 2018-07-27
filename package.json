@@ -2,6 +2,14 @@
   "name": "isotopes",
   "version": "0.1.0",
   "description": "Serverless and typed object store built on top of AWS SimpleDB",
+  "keywords": [
+    "aws",
+    "simpledb",
+    "client",
+    "typescript",
+    "serverless",
+    "storage"
+  ],
   "homepage": "https://github.com/squidfunk/isotopes",
   "bugs": {
     "url": "https://github.com/squidfunk/isotopes/",
