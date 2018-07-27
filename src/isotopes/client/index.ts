@@ -23,7 +23,7 @@
 import { SimpleDB } from "aws-sdk"
 import { toPairs } from "lodash"
 
-import { IsotopeDictionary } from "isotopes/format"
+import { IsotopeDictionary } from "../format"
 
 /* ----------------------------------------------------------------------------
  * Types

@@ -25,15 +25,15 @@ import { omit } from "lodash"
 import {
   IsotopeClient,
   IsotopeClientOptions
-} from "isotopes/client"
+} from "./client"
 import {
   decode,
   encode,
   IsotopeFormatOptions
-} from "isotopes/format"
+} from "./format"
 import {
   IsotopeSelect
-} from "isotopes/select"
+} from "./select"
 
 /* ----------------------------------------------------------------------------
  * Types

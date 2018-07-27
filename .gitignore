@@ -27,6 +27,7 @@
 # NPM-related
 /node_modules
 /npm-debug.log*
+*.tgz
 
 # Distribution files
 /dist

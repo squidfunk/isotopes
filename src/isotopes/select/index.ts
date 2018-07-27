@@ -23,7 +23,7 @@
 import { isArray, isObject } from "lodash"
 import { Expression, select, Select } from "squel"
 
-import { IsotopeOptions } from "isotopes"
+import { IsotopeOptions } from ".."
 
 /* ----------------------------------------------------------------------------
  * Class
