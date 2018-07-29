@@ -38,14 +38,14 @@ import { Isotope } from "isotopes"
 
 TypeScript typings are provided as part of the package, so no need to install a
 separate package. However, the [aws-sdk][3] is listed as a peer dependency, so
-make sure it is installed. Note that when you run *Isotopes* from within AWS
-Lambda the SDK is already installed.
+make sure it is installed. When you run *Isotopes* from within AWS Lambda the
+SDK is already installed.
 
   [3]: https://www.npmjs.com/package/aws-sdk
 
 ## Usage
 
-> Note: the following instructions are intended for usage from TypeScript. You
+> Note: the following instructions are intended for usage with TypeScript. You
   can also use *Isotopes* from plain JavaScript by omitting all typings from
   the examples, but what's the point? [Learn TypeScript][4], it's awesome!
 
@@ -63,19 +63,20 @@ export interface Task {
     cpus: number                       /* Number of CPUs */
     memory: number                     /* Reserved memory */
     command?: string                   /* Command override */
-  }
+  },
+  tags: string[]                       /* Tags for categorization */
 }
 ```
 
 Every type that is handled by *Isotopes* must contain a unique identifier which
-is used for item identification. The identifier *should* be on the first level
-of the type to be stored, all other variables can be arbitrarily nested. Next,
-create an isotope for the type, e.g. for a SimpleDB domain named `tasks`:
+is used as an item name. The item name *should* be on the first level of the
+type to be stored, all other variables can be arbitrarily nested. Next, create
+an isotope for the type, e.g. for a SimpleDB domain named `tasks`:
 
 ``` ts
 const tasks = new Isotope<Task>({
-  domain: "tasks",
-  key: "id"
+  domain: "tasks",                     /* SimpleDB domain name */
+  key: "id"                            /* SimpleDB item name (primary key) */
 })
 ```
 
@@ -84,7 +85,7 @@ const tasks = new Isotope<Task>({
   or destroy domains by itself. However, [Terraform][5] is an excellent tool
   for this.
 
-Suppose we have the following item:
+Now, suppose we have the following item:
 
 ``` ts
 const task: Task = {
@@ -94,13 +95,17 @@ const task: Task = {
     image: "busybox",
     cpus: 2,
     memory: 2048
-  }
+  },
+  tags: [
+    "TAG_1",
+    "TAG_2"
+  ]
 }
 ```
 
-We can persist, retrieve and delete items of our defined type from the isotope
-by using a simple API, cleverly omitting all the boilerplate that is normally
-necessary for interfacing with SimpleDB. Persist an item:
+We can persist, retrieve and delete items from the isotope by using a simple
+API, cleverly omitting all the boilerplate that is normally necessary for
+interfacing with SimpleDB. Persist an item:
 
 ``` ts
 await tasks.put(task) // => void
@@ -161,21 +166,22 @@ try {
 ### Persistence, retrieval and deletion of partial types
 
 By default, *Isotopes* forces only valid entries to be written to SimpleDB which
-means that all non-optional fields need to be defined in the payload. However,
-SimpleDB allows reading and writing of partial attribute values, so it might be
-desirable in some cases to loosen that restriction and allow partial reads and
-writes. *Isotopes* allows both configurations through simple generic typing.
+means that all non-optional fields need to be defined in the payload (otherwise
+the TypeScript compiler will moan). However, SimpleDB allows reading and writing
+of partial attribute values, so it might be desirable in some cases to loosen
+that restriction and allow partial reads and writes. *Isotopes* allows both
+configurations through simple generic typing.
 
 ``` ts
 class Isotope<
  T    extends {},                      /* Data type */
  TPut extends Partial<T> = T,          /* Data type expected by PUT operation */
- TGet extends Partial<T> = TPut        /* Data type returned by PUT operation */
+ TGet extends Partial<T> = TPut        /* Data type returned by GET operation */
 > {}
 ```
 
 The first type argument is mandatory and defines the base type. The second
-and third type arguments can be used to specify what exact types PUT and GET
+and third type arguments can be used to specify what exact types `PUT` and `GET`
 operations return but normally they are equal to the base type.
 
 Allow complete values only:
@@ -184,24 +190,24 @@ Allow complete values only:
 new Isotope<Task>(...)
 ```
 
-Allow partial values in PUT and GET operations:
+Allow partial values in `PUT` and `GET` operations:
 
 ``` ts
 new Isotope<Task, Partial<Task>>(...)
 ```
 
-Allow partial values in GET operations only:
+Allow partial values in `GET` operations only:
 
 ``` ts
 new Isotope<Type, Type, Partial<Type>>(...)
 ```
 
-Furthermore, SELECT operations are assumed to return the same type as GET
+Furthermore, `SELECT` operations are assumed to return the same type as `GET`
 operations. Since this may be different on a case-by-case basis (depending on
-the specific SQL query), it may be overriden on a per-query basis:
+the specific SQL query), it may be overridden on a per-query basis:
 
 ``` ts
-tasks.select<Partial<Task>>(...)
+await tasks.select<Partial<Task>>(...)
 ```
 
 ### Encoding
@@ -216,7 +222,7 @@ const tasks = new Isotope<Task>({
 })
 ```
 
-#### JSON <small>default, recommended</small>
+#### JSON (recommended)
 
 > `options.format.encoding: "json"`
 
@@ -230,13 +236,15 @@ whereas numbers and booleans are written literally:
     { "Name": "active", "Value": "true" },
     { "Name": "props.image", "Value": "\"busybox\"" },
     { "Name": "props.cpus", "Value": "2" },
-    { "Name": "props.memory", "Value": "2048" }
+    { "Name": "props.memory", "Value": "2048" },
+    { "Name": "tags[]", "Value": "\"TAG_1\"" },
+    { "Name": "tags[]", "Value": "\"TAG_2\"" }
   ]
 }
 ```
 
-If you don't plan to use the SimpleDB domain from a non-*Isotope* environment,
-you should always stick with JSON-encoding because it is more safe than text
+If you don't plan to use the SimpleDB domain from a non-*Isotope* client, you
+should always stick with JSON-encoding because it is more safe than text
 encoding and comes with no limitations.
 
 #### Text
@@ -253,7 +261,9 @@ as literals so they are written without quotes:
     { "Name": "active", "Value": "true" },
     { "Name": "props.image", "Value": "busybox" },
     { "Name": "props.cpus", "Value": "2" },
-    { "Name": "props.memory", "Value": "2048" }
+    { "Name": "props.memory", "Value": "2048" },
+    { "Name": "tags[]", "Value": "TAG_1" },
+    { "Name": "tags[]", "Value": "TAG_2" }
   ]
 }
 ```
