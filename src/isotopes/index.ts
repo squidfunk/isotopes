@@ -27,9 +27,9 @@ import {
   IsotopeClientOptions
 } from "./client"
 import {
-  decode,
-  encode,
-  IsotopeFormatOptions
+  flatten,
+  IsotopeFormatOptions,
+  unflatten
 } from "./format"
 import {
   IsotopeSelect
@@ -145,7 +145,7 @@ export class Isotope<
   ): Promise<TGet | undefined> {
     const item = await this.client.get(id, names)
     if (item) {
-      const data = decode<TGet>(item.attrs, this.options.format)
+      const data = unflatten<TGet>(item.attrs, this.options.format)
       data[this.options.key] = item.id as any // TODO: Fix typings
       return data
     }
@@ -162,7 +162,7 @@ export class Isotope<
   public async put(data: TPut): Promise<void> {
     await this.client.put(
       data[this.options.key].toString(),
-      encode(
+      flatten(
         omit(data, this.options.key),
         this.options.format
       )
@@ -197,7 +197,7 @@ export class Isotope<
     const { items, next } = await this.client.select(expr.toString(), prev)
     return {
       items: items.map(item => {
-        const data = decode<TSelect>(item.attrs, this.options.format)
+        const data = unflatten<TSelect>(item.attrs, this.options.format)
         data[this.options.key] = item.id as any // TODO: Fix typings
         return data
       }),

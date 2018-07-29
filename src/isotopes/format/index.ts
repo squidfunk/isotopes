@@ -20,8 +20,18 @@
  * IN THE SOFTWARE.
  */
 
-import { flatten, unflatten } from "flat"
-import { mapValues } from "lodash"
+import {
+  isArray,
+  isPlainObject,
+  set,
+  toPairs
+} from "lodash"
+
+import {
+  decode,
+  encode,
+  IsotopeFormatEncoding
+} from "./encoding"
 
 /* ----------------------------------------------------------------------------
  * Types
@@ -31,21 +41,17 @@ import { mapValues } from "lodash"
  * Isotope dictionary
  */
 export interface IsotopeDictionary {
-  [key: string]: string                /* Key-value pairs */
+  [key: string]: string | string[]     /* Key-value pairs */
 }
 
-/**
- * Isotope format encoding
- */
-export type IsotopeFormatEncoding =
-  | "json"                             /* Default JSON encoding */
-  | "text"                             /* Strings are encoded as literals */
+/* ------------------------------------------------------------------------- */
 
 /**
  * Isotope format options
  */
 export interface IsotopeFormatOptions {
-  encoding: IsotopeFormatEncoding      /* Format encoding */
+  encoding?: IsotopeFormatEncoding     /* Format encoding */
+  multiple?: boolean                   /* Multiple attributes for arrays */
 }
 
 /* ----------------------------------------------------------------------------
@@ -55,8 +61,9 @@ export interface IsotopeFormatOptions {
 /**
  * Default format options
  */
-const defaultOptions: IsotopeFormatOptions = {
-  encoding: "json"
+const defaultOptions: Required<IsotopeFormatOptions> = {
+  encoding: "json",
+  multiple: true
 }
 
 /* ----------------------------------------------------------------------------
@@ -66,74 +73,73 @@ const defaultOptions: IsotopeFormatOptions = {
 /**
  * Flatten data into a dictionary
  *
- * By default every field is formatted as JSON in order to ensure type
- * information not to be lost. However, this means that strings are actually
- * double-quoted which may not be desirable if the SimpleDB domain is also used
- * by other parts of your system as it cripples the querying experience.
- *
- * This library provides the ability to use an alternate encoding and store
- * strings as literals so they are written without quotes. When decoding the
- * data, we intercept JSON.parse assuming that we encountered a literal string
- * if it fails to decode. However, this imposes the following limitations:
- *
- * 1. Numbers that are encoded as strings (e.g. house numbers, because they can
- *    exhibit values as "2A" etc.) are interpreted as numbers when decoded with
- *    JSON.parse. Countermeasure: ensure that numbers are typed as numbers, or
- *    string fields contain at least one non-number character.
- *
- * 2. If strings accidentally contain valid JSON, e.g. "{}", the value is parsed
- *    as JSON and the field gets assigned that precise value. This also breaks
- *    type safety. Countermeasure: ensure that your strings are never valid JSON
- *    by prepending some character that makes JSON.parse fail.
- *
- * As enforcing as those restrictions may seem to be, it is often true that
- * the properties and characteristics of the data are known a-priori and those
- * special cases can be ruled out with great certainty. This also means that
- * querying the data from other parts of your system gets easier as string
- * values don't need to be enclosed into quotes (and don't start thinking about
- * LIKE queries) which is far more user-friendly.
- *
  * @template T - Data type
  *
- * @param data - Data to encode
+ * @param data - Data to flatten and encode
  * @param options - Format options
+ * @param path - Path prefix to prepend to name
  *
  * @return Encoded dictionary
  */
-export function encode<T extends {}>(
-  data: T, options: IsotopeFormatOptions = defaultOptions
+export function flatten<T extends {}>(
+  data: T, options: Partial<IsotopeFormatOptions> = {}, path: string[] = []
 ): IsotopeDictionary {
-  const dict = flatten(data, { safe: true })
-  return mapValues(dict, value =>
-    options.encoding === "json" || typeof value !== "string"
-      ? JSON.stringify(value)
-      : value
-  )
+  const { encoding, multiple } = { ...defaultOptions, ...options }
+  return toPairs(data)
+    .reduce<IsotopeDictionary>((dict, [name, value]) => {
+
+      /* Recurse on objects and add name to prefix path */
+      if (isPlainObject(value)) {
+        return {
+          ...dict,
+          ...flatten(value, { encoding, multiple }, [...path, name])
+        }
+
+      /* Encode array values separately */
+      } else if (multiple && isArray(value)) {
+        return {
+          ...dict,
+          [[...path, name + "[]"].join(".")]: value.map(entry =>
+            encode(entry, encoding)
+          )
+        }
+
+      /* Encode all other values */
+      } else {
+        return {
+          ...dict,
+          [[...path, name].join(".")]: encode(value, encoding)
+        }
+      }
+    }, {})
 }
 
 /**
  * Unflatten an encoded dictionary
  *
- * See the function documentation on encode() for a detailed explanation on
- * how error handling is implemented and why.
- *
  * @template T - Data type
  *
- * @param dict - Dictionary to decode
+ * @param dict - Dictionary to unflatten and decode
  * @param options - Format options
  *
  * @return Decoded data
  */
-export function decode<T extends {}>(
-  dict: IsotopeDictionary, options: IsotopeFormatOptions = defaultOptions
+export function unflatten<T extends {}>(
+  dict: IsotopeDictionary, options: Partial<IsotopeFormatOptions> = {}
 ): T {
-  return unflatten(mapValues(dict, value => {
-    try {
-      return JSON.parse(value)
-    } catch (err) {
-      if (options.encoding === "text")
-        return value
-      throw err
-    }
-  }))
+  const { encoding } = { ...defaultOptions, ...options }
+  return toPairs(dict)
+    .reduce<T>((data, [name, value]) => {
+
+      /* Handle all array values separately */
+      if (isArray(value)) {
+        return set(data, name.replace(/\[\]$/, ""), value.map(entry =>
+          decode(entry, encoding)
+        ))
+
+      /* Decode all other values */
+      } else {
+        return set(data, name, decode(value, encoding))
+      }
+    }, {} as any)
 }

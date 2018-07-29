@@ -21,10 +21,9 @@
  */
 
 import { Callback } from "aws-lambda"
-import { SimpleDB } from "aws-sdk"
 import { mock, restore } from "aws-sdk-mock"
-import { toPairs } from "lodash"
 
+import { mapDictionaryToAttributes } from "isotopes/client"
 import { IsotopeDictionary } from "isotopes/format"
 
 /* ----------------------------------------------------------------------------
@@ -61,12 +60,7 @@ export function mockSimpleDBGetAttributesWithResult(
   return mockSimpleDBGetAttributes(
     jasmine.createSpy("getAttributes"))
       .and.returnValue({
-        Attributes: toPairs(attrs)
-          .map<SimpleDB.Attribute>(([key, value]) => ({
-            Name: key,
-            Value: value,
-            Replace: true
-          }))
+        Attributes: mapDictionaryToAttributes(attrs || {})
       })
 }
 

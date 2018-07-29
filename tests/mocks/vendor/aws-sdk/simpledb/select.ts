@@ -21,11 +21,12 @@
  */
 
 import { Callback } from "aws-lambda"
-import { SimpleDB } from "aws-sdk"
 import { mock, restore } from "aws-sdk-mock"
-import { toPairs } from "lodash"
 
-import { IsotopeClientItem } from "isotopes/client"
+import {
+  IsotopeClientItem,
+  mapDictionaryToAttributes
+} from "isotopes/client"
 
 /* ----------------------------------------------------------------------------
  * Functions
@@ -64,12 +65,7 @@ export function mockSimpleDBSelectWithResult(
       .and.returnValue({
         Items: items.map(({ id, attrs }) => ({
           Name: id,
-          Attributes: toPairs(attrs)
-            .map<SimpleDB.Attribute>(([key, value]) => ({
-              Name: key,
-              Value: value,
-              Replace: true
-            }))
+          Attributes: mapDictionaryToAttributes(attrs)
         })),
         NextToken: next
       })

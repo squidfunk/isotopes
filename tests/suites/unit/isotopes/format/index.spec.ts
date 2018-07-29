@@ -21,9 +21,9 @@
  */
 
 import {
-  decode,
-  encode,
-  IsotopeFormatOptions
+  flatten,
+  IsotopeFormatOptions,
+  unflatten
 } from "isotopes/format"
 
 import { chance } from "_/helpers"
@@ -35,71 +35,52 @@ import { chance } from "_/helpers"
 /* Isotope formatting utilities */
 describe("isotopes/format", () => {
 
-  /* encode */
-  describe("encode", () => {
+  /* flatten */
+  describe("flatten", () => {
 
-    /* with JSON format */
-    describe("with JSON format", () => {
+    /* Test: should flatten nested values */
+    it("should flatten nested values", () => {
+      const data = { a: { b: { c: chance.string() } } }
+      expect(Object.keys(flatten(data)))
+        .toEqual(["a.b.c"])
+    })
 
-      /* Test: should flatten nested objects */
-      it("should flatten nested objects", () => {
-        const data = { a: { b: { c: chance.string() } } }
-        expect(Object.keys(encode(data)))
-          .toEqual(["a.b.c"])
-      })
-
-      /* Test: should write quoted string values */
-      it("should write quoted string values", () => {
-        const data = { a: { b: chance.string() } }
-        expect(encode(data)).toEqual({
-          "a.b": JSON.stringify(data.a.b)
-        })
-      })
-
-      /* Test: should write literal numeric values */
-      it("should write literal numeric values", () => {
-        const data = { a: { b: chance.integer() } }
-        expect(encode(data)).toEqual({
-          "a.b": JSON.stringify(data.a.b)
-        })
-      })
-
-      /* Test: should write literal boolean values */
-      it("should write literal boolean values", () => {
-        const data = { a: { b: chance.bool() } }
-        expect(encode(data)).toEqual({
-          "a.b": JSON.stringify(data.a.b)
-        })
-      })
-
-      /* Test: should write serialized array values */
-      it("should write serialized array values", () => {
-        const data = { a: { b: [{ c: chance.string() }] } }
-        expect(encode(data)).toEqual({
-          "a.b": JSON.stringify(data.a.b)
-        })
+    /* Test: should write quoted string values */
+    it("should write quoted string values", () => {
+      const data = { a: { b: chance.string() } }
+      expect(flatten(data)).toEqual({
+        "a.b": JSON.stringify(data.a.b)
       })
     })
 
-    /* with text format */
-    describe("with text format", () => {
+    /* Test: should write literal numeric values */
+    it("should write literal numeric values", () => {
+      const data = { a: { b: chance.integer() } }
+      expect(flatten(data)).toEqual({
+        "a.b": JSON.stringify(data.a.b)
+      })
+    })
+
+    /* Test: should write literal boolean values */
+    it("should write literal boolean values", () => {
+      const data = { a: { b: chance.bool() } }
+      expect(flatten(data)).toEqual({
+        "a.b": JSON.stringify(data.a.b)
+      })
+    })
+
+    /* with text encoding */
+    describe("with text encoding", () => {
 
       /* Format options */
       const options: IsotopeFormatOptions = {
         encoding: "text"
       }
 
-      /* Test: should flatten nested objects */
-      it("should flatten nested objects", () => {
-        const data = { a: { b: { c: chance.string() } } }
-        expect(Object.keys(encode(data, options)))
-          .toEqual(["a.b.c"])
-      })
-
       /* Test: should write literal string values */
       it("should write literal string values", () => {
         const data = { a: { b: chance.string() } }
-        expect(encode(data, options)).toEqual({
+        expect(flatten(data, options)).toEqual({
           "a.b": data.a.b
         })
       })
@@ -107,7 +88,7 @@ describe("isotopes/format", () => {
       /* Test: should write literal numeric values */
       it("should write literal numeric values", () => {
         const data = { a: { b: chance.integer() } }
-        expect(encode(data, options)).toEqual({
+        expect(flatten(data, options)).toEqual({
           "a.b": JSON.stringify(data.a.b)
         })
       })
@@ -115,96 +96,146 @@ describe("isotopes/format", () => {
       /* Test: should write literal boolean values */
       it("should write literal boolean values", () => {
         const data = { a: { b: chance.bool() } }
-        expect(encode(data, options)).toEqual({
+        expect(flatten(data, options)).toEqual({
+          "a.b": JSON.stringify(data.a.b)
+        })
+      })
+    })
+
+    /* with multiple attributes */
+    describe("with multiple attributes", () => {
+
+      /* Test: should write array with string values */
+      it("should write array with string values", () => {
+        const data = { a: { b: [chance.string(), chance.string()] } }
+        expect(flatten(data)).toEqual({
+          "a.b[]": data.a.b.map(item => JSON.stringify(item))
+        })
+      })
+
+      /* Test: should write array with numeric values */
+      it("should write array with numeric values", () => {
+        const data = { a: { b: [chance.integer(), chance.integer()] } }
+        expect(flatten(data)).toEqual({
+          "a.b[]": data.a.b.map(item => JSON.stringify(item))
+        })
+      })
+
+      /* Test: should write array with boolean values */
+      it("should write array with boolean values", () => {
+        const data = { a: { b: [chance.bool(), chance.bool()] } }
+        expect(flatten(data)).toEqual({
+          "a.b[]": data.a.b.map(item => JSON.stringify(item))
+        })
+      })
+
+      /* Test: should write array with object values */
+      it("should write array with object values", () => {
+        const data = { a: { b: [{ c: chance.string() }] } }
+        expect(flatten(data)).toEqual({
+          "a.b[]": data.a.b.map(item => JSON.stringify(item))
+        })
+      })
+    })
+
+    /* with single attributes */
+    describe("with single attributes", () => {
+
+      /* Format options */
+      const options: IsotopeFormatOptions = {
+        encoding: "text",
+        multiple: false
+      }
+
+      /* Test: should write array with string values */
+      it("should write array with string values", () => {
+        const data = { a: { b: [chance.string(), chance.string()] } }
+        expect(flatten(data, options)).toEqual({
           "a.b": JSON.stringify(data.a.b)
         })
       })
 
-      /* Test: should write serialized array values */
-      it("should write serialized array values", () => {
+      /* Test: should write array with numeric values */
+      it("should write array with numeric values", () => {
+        const data = { a: { b: [chance.integer(), chance.integer()] } }
+        expect(flatten(data, options)).toEqual({
+          "a.b": JSON.stringify(data.a.b)
+        })
+      })
+
+      /* Test: should write array with boolean values */
+      it("should write array with boolean values", () => {
+        const data = { a: { b: [chance.bool(), chance.bool()] } }
+        expect(flatten(data, options)).toEqual({
+          "a.b": JSON.stringify(data.a.b)
+        })
+      })
+
+      /* Test: should write array with object values */
+      it("should write array with object values", () => {
         const data = { a: { b: [{ c: chance.string() }] } }
-        expect(encode(data, options)).toEqual({
+        expect(flatten(data, options)).toEqual({
           "a.b": JSON.stringify(data.a.b)
         })
       })
     })
   })
 
-  /* decode */
-  describe("decode", () => {
+  /* unflatten */
+  describe("unflatten", () => {
 
-    /* with JSON format */
-    describe("with JSON format", () => {
-
-      /* Test: should expand nested objects */
-      it("should expand nested objects", () => {
-        const data = { "a.b.c": "{}" }
-        expect(decode(data)).toEqual({
-          a: { b: { c: {} } }
-        })
-      })
-
-      /* Test: should read quoted string values */
-      it("should read quoted string values", () => {
-        const data = { "a.b": JSON.stringify(chance.string()) }
-        expect(decode(data)).toEqual({
-          a: { b: JSON.parse(data["a.b"]) }
-        })
-      })
-
-      /* Test: should read literal numeric values */
-      it("should read literal numeric values", () => {
-        const data = { "a.b": JSON.stringify(chance.integer()) }
-        expect(decode(data)).toEqual({
-          a: { b: JSON.parse(data["a.b"]) }
-        })
-      })
-
-      /* Test: should read literal boolean values */
-      it("should read literal boolean values", () => {
-        const data = { "a.b": JSON.stringify(chance.bool()) }
-        expect(decode(data)).toEqual({
-          a: { b: JSON.parse(data["a.b"]) }
-        })
-      })
-
-      /* Test: should read serialized array values */
-      it("should read serialized array values", () => {
-        const data = { "a.b": JSON.stringify([{ c: {} }]) }
-        expect(decode(data)).toEqual({
-          a: { b: [{ c: {} }] }
-        })
-      })
-
-      /* Test: should throw on invalid JSON */
-      it("should throw on invalid JSON", () => {
-        const data = { "a.b": chance.string() }
-        expect(() => {
-          decode(data)
-        }).toThrowError()
+    /* Test: should unflatten nested values */
+    it("should unflatten nested values", () => {
+      const data = { "a.b.c": "{}" }
+      expect(unflatten(data)).toEqual({
+        a: { b: { c: {} } }
       })
     })
 
-    /* with text format */
-    describe("with text format", () => {
+    /* Test: should read quoted string values */
+    it("should read quoted string values", () => {
+      const data = { "a.b": JSON.stringify(chance.string()) }
+      expect(unflatten(data)).toEqual({
+        a: { b: JSON.parse(data["a.b"]) }
+      })
+    })
+
+    /* Test: should read literal numeric values */
+    it("should read literal numeric values", () => {
+      const data = { "a.b": JSON.stringify(chance.integer()) }
+      expect(unflatten(data)).toEqual({
+        a: { b: JSON.parse(data["a.b"]) }
+      })
+    })
+
+    /* Test: should read literal boolean values */
+    it("should read literal boolean values", () => {
+      const data = { "a.b": JSON.stringify(chance.bool()) }
+      expect(unflatten(data)).toEqual({
+        a: { b: JSON.parse(data["a.b"]) }
+      })
+    })
+
+    /* Test: should throw on invalid JSON */
+    it("should throw on invalid JSON", () => {
+      const data = { "a.b": chance.string() }
+      expect(() => {
+        unflatten(data)
+      }).toThrowError()
+    })
+
+    /* with text encoding */
+    describe("with text encoding", () => {
 
       /* Format options */
       const options: IsotopeFormatOptions = {
         encoding: "text"
       }
 
-      /* Test: should expand nested objects */
-      it("should expand nested objects", () => {
-        const data = { "a.b.c": "{}" }
-        expect(decode(data, options)).toEqual({
-          a: { b: { c: {} } }
-        })
-      })
-
       /* Test: should read literal string values */
       it("should read literal string values", () => {
         const data = { "a.b": chance.string() }
-        expect(decode(data, options)).toEqual({
+        expect(unflatten(data, options)).toEqual({
           a: { b: data["a.b"] }
         })
       })
@@ -212,7 +243,7 @@ describe("isotopes/format", () => {
       /* Test: should read literal numeric values */
       it("should read literal numeric values", () => {
         const data = { "a.b": JSON.stringify(chance.integer()) }
-        expect(decode(data, options)).toEqual({
+        expect(unflatten(data, options)).toEqual({
           a: { b: JSON.parse(data["a.b"]) }
         })
       })
@@ -220,7 +251,7 @@ describe("isotopes/format", () => {
       /* Test: should read literal boolean values */
       it("should read literal boolean values", () => {
         const data = { "a.b": JSON.stringify(chance.bool()) }
-        expect(decode(data, options)).toEqual({
+        expect(unflatten(data, options)).toEqual({
           a: { b: JSON.parse(data["a.b"]) }
         })
       })
@@ -228,7 +259,7 @@ describe("isotopes/format", () => {
       /* Test: should read serialized array values */
       it("should read serialized array values", () => {
         const data = { "a.b": JSON.stringify([{ c: {} }]) }
-        expect(decode(data, options)).toEqual({
+        expect(unflatten(data, options)).toEqual({
           a: { b: [{ c: {} }] }
         })
       })
@@ -237,8 +268,80 @@ describe("isotopes/format", () => {
       it("should not throw on invalid JSON", () => {
         const data = { "a.b": chance.string() }
         expect(() => {
-          decode(data, options)
+          unflatten(data, options)
         }).not.toThrowError()
+      })
+    })
+
+    /* with multiple attributes */
+    describe("with multiple attributes", () => {
+
+      /* Test: should read array with string values */
+      it("should read array with string values", () => {
+        const data = { "a.b[]": [JSON.stringify(chance.string())] }
+        expect(unflatten(data)).toEqual({
+          a: { b: data["a.b[]"].map(item => JSON.parse(item)) }
+        })
+      })
+
+      /* Test: should read array with numeric values */
+      it("should read array with numeric values", () => {
+        const data = { "a.b[]": [JSON.stringify(chance.integer())] }
+        expect(unflatten(data)).toEqual({
+          a: { b: data["a.b[]"].map(item => JSON.parse(item)) }
+        })
+      })
+
+      /* Test: should read array with boolean values */
+      it("should read array with boolean values", () => {
+        const data = { "a.b[]": [JSON.stringify(chance.bool())] }
+        expect(unflatten(data)).toEqual({
+          a: { b: data["a.b[]"].map(item => JSON.parse(item)) }
+        })
+      })
+
+      /* Test: should write array with object values */
+      it("should read array with object values", () => {
+        const data = { "a.b[]": [JSON.stringify({ c: chance.bool() })] }
+        expect(unflatten(data)).toEqual({
+          a: { b: data["a.b[]"].map(item => JSON.parse(item)) }
+        })
+      })
+    })
+
+    /* with single attributes */
+    describe("with single attributes", () => {
+
+      /* Test: should read array with string values */
+      it("should read array with string values", () => {
+        const data = { "a.b": JSON.stringify([chance.string()]) }
+        expect(unflatten(data)).toEqual({
+          a: { b: JSON.parse(data["a.b"]) }
+        })
+      })
+
+      /* Test: should read array with numeric values */
+      it("should read array with numeric values", () => {
+        const data = { "a.b": JSON.stringify([chance.integer()]) }
+        expect(unflatten(data)).toEqual({
+          a: { b: JSON.parse(data["a.b"]) }
+        })
+      })
+
+      /* Test: should read array with boolean values */
+      it("should read array with boolean values", () => {
+        const data = { "a.b": JSON.stringify([chance.bool()]) }
+        expect(unflatten(data)).toEqual({
+          a: { b: JSON.parse(data["a.b"]) }
+        })
+      })
+
+      /* Test: should write array with object values */
+      it("should read array with object values", () => {
+        const data = { "a.b": JSON.stringify([{ c: chance.bool() }]) }
+        expect(unflatten(data)).toEqual({
+          a: { b: JSON.parse(data["a.b"]) }
+        })
       })
     })
   })

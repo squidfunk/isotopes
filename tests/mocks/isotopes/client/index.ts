@@ -24,7 +24,7 @@ import {
   IsotopeClient,
   IsotopeClientItem
 } from "isotopes/client"
-import { encode } from "isotopes/format"
+import { flatten } from "isotopes/format"
 
 /* ----------------------------------------------------------------------------
  * Data
@@ -36,7 +36,7 @@ import { encode } from "isotopes/format"
  * @template T - Data type
  *
  * @param id - Identifier
- * @param data - Data to encode
+ * @param data - Data to flatten
  *
  * @return Item
  */
@@ -45,7 +45,7 @@ export function mockIsotopeClientItem<T>(
 ): IsotopeClientItem {
   return {
     id,
-    attrs: encode(data)
+    attrs: flatten(data)
   }
 }
 

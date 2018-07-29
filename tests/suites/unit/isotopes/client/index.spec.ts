@@ -25,7 +25,8 @@ import { range, toPairs } from "lodash"
 
 import {
   IsotopeClient,
-  IsotopeClientItem
+  IsotopeClientItem,
+  mapDictionaryToAttributes
 } from "isotopes/client"
 
 import { chance } from "_/helpers"
@@ -168,12 +169,7 @@ describe("isotopes/client", () => {
           expect(putAttributesMock).toHaveBeenCalledWith({
             DomainName: domain,
             ItemName: id,
-            Attributes: toPairs(attrs)
-              .map<SimpleDB.Attribute>(([key, value]) => ({
-                Name: key,
-                Value: value,
-                Replace: true
-              }))
+            Attributes: mapDictionaryToAttributes(attrs)
           })
         })
 

@@ -34,7 +34,7 @@ export interface Data {
   random: {
     string: string                     /* String value */
     number: number                     /* Numeric value */
-    boolean: boolean                   /* Boolean value */
+    boolean: boolean[]                 /* Boolean value */
   }
 }
 
@@ -53,7 +53,7 @@ export function mockData(): Data {
     random: {
       string: chance.string(),
       number: chance.integer(),
-      boolean: chance.bool()
+      boolean: [chance.bool()]
     }
   }
 }

@@ -21,7 +21,7 @@
  */
 
 import { SimpleDB } from "aws-sdk"
-import { toPairs } from "lodash"
+import { castArray, toPairs } from "lodash"
 
 import { IsotopeDictionary } from "../format"
 
@@ -61,6 +61,51 @@ export interface IsotopeClientItemList {
  */
 const defaultOptions: IsotopeClientOptions = {
   consistent: false
+}
+
+/* ----------------------------------------------------------------------------
+ * Functions
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Map a dictionary to a list of SimpleDB attributes
+ *
+ * @param attrs - Attributes
+ *
+ * @return SimpleDB attributes
+ */
+export function mapDictionaryToAttributes(
+  attrs: IsotopeDictionary
+): SimpleDB.ReplaceableAttribute[] {
+  return toPairs(attrs)
+    .reduce<SimpleDB.ReplaceableAttribute[]>((list, [key, value]) => [
+      ...list,
+      ...castArray(value).map(entry => ({
+        Name: key,
+        Value: entry,
+        Replace: true
+      }))
+    ], [])
+}
+
+/**
+ * Map a list of SimpleDB attributes to a dictionary
+ *
+ * @param attrs - Attributes
+ *
+ * @return Dictionary
+ */
+export function mapAttributesToDictionary(
+  attrs: SimpleDB.Attribute[]
+): IsotopeDictionary {
+  return attrs
+    .reduce<IsotopeDictionary>((dict, { Name, Value }) => ({
+      ...dict,
+      ...(Name.match(/\[\]$/)
+        ? { [Name]: [ ...(dict[Name] || []), Value ] }
+        : { [Name]: Value }
+      )
+    }), {})
 }
 
 /* ----------------------------------------------------------------------------
@@ -115,10 +160,7 @@ export class IsotopeClient {
     /* Map identifier and attributes */
     return {
       id,
-      attrs: Attributes
-        .reduce<IsotopeDictionary>((attrs, { Name, Value }) => ({
-          ...attrs, [Name]: Value
-        }), {})
+      attrs: mapAttributesToDictionary(Attributes)
     }
   }
 
@@ -136,12 +178,7 @@ export class IsotopeClient {
     await this.simpledb.putAttributes({
       DomainName: this.domain,
       ItemName: id,
-      Attributes: toPairs(attrs)
-        .map<SimpleDB.Attribute>(([key, value]) => ({
-          Name: key,
-          Value: value,
-          Replace: true
-        }))
+      Attributes: mapDictionaryToAttributes(attrs)
     }).promise()
   }
 
@@ -193,10 +230,7 @@ export class IsotopeClient {
     return {
       items: Items.map<IsotopeClientItem>(({ Name: id, Attributes }) => ({
         id,
-        attrs: Attributes
-          .reduce<IsotopeDictionary>((attrs, { Name, Value }) => ({
-            ...attrs, [Name]: Value
-          }), {})
+        attrs: mapAttributesToDictionary(Attributes)
       })),
       next: NextToken
     }
