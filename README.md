@@ -132,16 +132,13 @@ const query = tasks.getQueryBuilder()
   .order("`props.memory >= ?`", 2048)
   .limit(100)
 
-/* Query domain and process items */
-let result = await tasks.select(query)
+/* Query domain and process all items */
+let prev
 do {
-  result.items.map(console.log)
-
-  /* Continue with next page, if any */
-  result = result.next
-    ? await result.next()
-    : undefined
-} while (result)
+  const { items, next } = await tasks.select(query, prev)
+  items.map(console.log)
+  prev = next
+} while (prev)
 ```
 
   [5]: https://www.terraform.io/

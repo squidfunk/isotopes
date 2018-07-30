@@ -58,9 +58,7 @@ export interface IsotopeOptions<T extends {}> {
  */
 export interface IsotopeResult<T extends {}> {
   items: T[]                           /* Items on current page */
-  next?: () => Promise<
-    IsotopeResult<T>
-  >                                    /* Next page */
+  next?: string                        /* Pagination token */
 }
 
 /* ----------------------------------------------------------------------------
@@ -219,9 +217,7 @@ export class Isotope<
         data[this.options.key] = item.id as any // TODO: Fix typings
         return data
       }),
-      ...(next
-        ? { next: () => this.select(expr.toString(), next) }
-        : {})
+      next
     }
   }
 }

@@ -229,7 +229,7 @@ export class IsotopeClient {
    * Retrieve a set of items matching the given SQL query
    *
    * @param expr - SQL query expression
-   * @param next - Token for pagination
+   * @param next - Pagination token
    *
    * @return Promise resolving with item list
    */

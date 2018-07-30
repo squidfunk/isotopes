@@ -258,30 +258,26 @@ describe("isotopes", () => {
       it("should resolve with item list", async () => {
         mockIsotopeClientSelectWithResult(result)
         const isotope = new Isotope<Data>(options)
-        const { items } = await isotope.select(expr)
+        const { items, next } = await isotope.select(expr)
         expect(items).toEqual(data)
-      })
-
-      /* Test: should resolve with pagination continuation if given */
-      it("should resolve with pagination continuation if given", async () => {
-        const selectMock = mockIsotopeClientSelectWithResult(result, token)
-        const isotope = new Isotope<Data>(options)
-        const { next } = await isotope.select(expr)
-        expect(next).toEqual(jasmine.any(Function))
-        if (next)
-          expect(await next()).toEqual({
-            items: data,
-            next: jasmine.any(Function)
-          })
-        expect(selectMock).toHaveBeenCalledTimes(2)
-      })
-
-      /* Test: should resolve without pagination token */
-      it("should resolve without pagination token", async () => {
-        mockIsotopeClientSelectWithResult(result)
-        const isotope = new Isotope<Data>(options)
-        const { next } = await isotope.select(expr)
         expect(next).toBeUndefined()
+      })
+
+      /* Test: should resolve with paginated item list */
+      it("should resolve with paginated item list", async () => {
+        const selectMock = mockIsotopeClientSelectWithResult(result)
+        const isotope = new Isotope<Data>(options)
+        const { items } = await isotope.select(expr, token)
+        expect(items).toEqual(data)
+        expect(selectMock).toHaveBeenCalledWith(expr, token)
+      })
+
+      /* Test: should resolve with pagination token */
+      it("should resolve with pagination token", async () => {
+        mockIsotopeClientSelectWithResult(result, token)
+        const isotope = new Isotope<Data>(options)
+        const { next } = await isotope.select(expr)
+        expect(next).toEqual(token)
       })
 
       /* Test: should resolve non-match with empty item list */
@@ -292,14 +288,13 @@ describe("isotopes", () => {
         expect(items).toEqual([])
       })
 
-      /* Test: should resolve non-match without pagination continuation */
-      it("should resolve non-match without pagination continuation",
-        async () => {
-          mockIsotopeClientSelectWithoutResult()
-          const isotope = new Isotope<Data>(options)
-          const { next } = await isotope.select(expr)
-          expect(next).toBeUndefined()
-        })
+      /* Test: should resolve non-match without pagination token */
+      it("should resolve non-match without pagination token", async () => {
+        mockIsotopeClientSelectWithoutResult()
+        const isotope = new Isotope<Data>(options)
+        const { next } = await isotope.select(expr)
+        expect(next).toBeUndefined()
+      })
 
       /* Test: should reject on client error */
       it("should reject on client error", async done => {
