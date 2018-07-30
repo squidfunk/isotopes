@@ -32,6 +32,7 @@
 /typings
 
 # Coverage reports
+/.nyc_output
 /coverage
 
 # Configuration
