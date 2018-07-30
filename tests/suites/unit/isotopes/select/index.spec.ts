@@ -48,8 +48,8 @@ describe("isotopes/select", () => {
     /* #where */
     describe("#where", () => {
 
-      /* with JSON format */
-      describe("with JSON format", () => {
+      /* with default encoding */
+      describe("with default encoding", () => {
 
         /* Options */
         const options: IsotopeOptions<Data> = {
@@ -60,70 +60,88 @@ describe("isotopes/select", () => {
         /* Test: should set quoted string values in exact conditions */
         it("should set quoted string values in exact conditions", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` = ?", "bar")
+            .where("`x` = ?", "y")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` = '\"bar\"')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = '\"y\"')")
         })
 
         /* Test: should set quoted string values in prefix queries */
         it("should set quoted string values in prefix queries", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` LIKE ?", "bar%")
+            .where("`x` LIKE ?", "y%")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` LIKE '\"bar%')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE '\"y%')")
         })
 
         /* Test: should set quoted string values in prefix queries */
         it("should set quoted string values in prefix queries", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` LIKE ?", "%bar")
+            .where("`x` LIKE ?", "%y")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` LIKE '%bar\"')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE '%y\"')")
         })
 
         /* Test: should set quoted string values in infix queries */
         it("should set quoted string values in infix queries", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` LIKE ?", "%bar%")
+            .where("`x` LIKE ?", "%y%")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` LIKE '%bar%')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE '%y%')")
         })
 
         /* Test: should set quoted string values in infix queries */
         it("should set quoted string values in infix queries", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` LIKE ?", "%bar%")
+            .where("`x` LIKE ?", "%y%")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` LIKE '%bar%')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE '%y%')")
         })
 
         /* Test: should set literal numeric values */
         it("should set literal numeric values", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` = ?", 10)
+            .where("`x` = ?", 10)
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` = '10')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = '10')")
         })
 
         /* Test: should set literal boolean values */
         it("should set literal boolean values", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` = ?", true)
+            .where("`x` = ?", true)
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` = 'true')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = 'true')")
+        })
+
+        /* Test: should set serialized object values */
+        it("should set serialized object values", () => {
+          const select = new IsotopeSelect(options)
+            .where("`x` = ?", { y: "z" })
+          expect(select.toString())
+            .toEqual(
+              "SELECT * FROM `domain` WHERE (`x` = '{\"y\":\"z\"}')"
+            )
         })
 
         /* Test: should set serialized array values */
         it("should set serialized array values", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` = ?", ["bar"])
+            .where("`x` = ?", ["y"])
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` = '[\"bar\"]')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = '[\"y\"]')")
+        })
+
+        /* Test: should set undefined values */
+        it("should set undefined values", () => {
+          const select = new IsotopeSelect(options)
+            .where("`x` = ?")
+          expect(select.toString())
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = 'undefined')")
         })
       })
 
-      /* with text format */
-      describe("with text format", () => {
+      /* with text encoding */
+      describe("with text encoding", () => {
 
         /* Options */
         const options: IsotopeOptions<Data> = {
@@ -135,65 +153,83 @@ describe("isotopes/select", () => {
         /* Test: should set literal string values in exact conditions */
         it("should set literal string values in exact conditions", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` = ?", "bar")
+            .where("`x` = ?", "y")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` = 'bar')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = 'y')")
         })
 
         /* Test: should set literal string values in prefix queries */
         it("should set literal string values in prefix queries", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` LIKE ?", "bar%")
+            .where("`x` LIKE ?", "y%")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` LIKE 'bar%')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE 'y%')")
         })
 
         /* Test: should set literal string values in prefix queries */
         it("should set literal string values in prefix queries", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` LIKE ?", "%bar")
+            .where("`x` LIKE ?", "%y")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` LIKE '%bar')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE '%y')")
         })
 
         /* Test: should set literal string values in infix queries */
         it("should set literal string values in infix queries", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` LIKE ?", "%bar%")
+            .where("`x` LIKE ?", "%y%")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` LIKE '%bar%')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE '%y%')")
         })
 
         /* Test: should set literal string values in infix queries */
         it("should set literal string values in infix queries", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` LIKE ?", "%bar%")
+            .where("`x` LIKE ?", "%y%")
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` LIKE '%bar%')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE '%y%')")
         })
 
         /* Test: should set literal numeric values */
         it("should set literal numeric values", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` = ?", 10)
+            .where("`x` = ?", 10)
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` = '10')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = '10')")
         })
 
         /* Test: should set literal boolean values */
         it("should set literal boolean values", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` = ?", true)
+            .where("`x` = ?", true)
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` = 'true')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = 'true')")
+        })
+
+        /* Test: should set literal boolean values */
+        it("should set serialized object values", () => {
+          const select = new IsotopeSelect(options)
+            .where("`x` = ?", { y: "z" })
+          expect(select.toString())
+            .toEqual(
+              "SELECT * FROM `domain` WHERE (`x` = '{\"y\":\"z\"}')"
+            )
         })
 
         /* Test: should set serialized array values */
         it("should set serialized array values", () => {
           const select = new IsotopeSelect(options)
-            .where("`foo` = ?", ["bar"])
+            .where("`x` = ?", ["y"])
           expect(select.toString())
-            .toEqual("SELECT * FROM `domain` WHERE (`foo` = '[\"bar\"]')")
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = '[\"y\"]')")
+        })
+
+        /* Test: should set undefined values */
+        it("should set undefined values", () => {
+          const select = new IsotopeSelect(options)
+            .where("`x` = ?")
+          expect(select.toString())
+            .toEqual("SELECT * FROM `domain` WHERE (`x` = 'undefined')")
         })
       })
     })
@@ -210,25 +246,25 @@ describe("isotopes/select", () => {
       /* Test: should return items in ascending order by default */
       it("should return items in ascending order by default", () => {
         const select = new IsotopeSelect(options)
-          .order("`foo`")
+          .order("`x`")
         expect(select.toString())
-          .toEqual("SELECT * FROM `domain` ORDER BY `foo` ASC")
+          .toEqual("SELECT * FROM `domain` ORDER BY `x` ASC")
       })
 
       /* Test: should order items ascending */
       it("should return items in ascending order", () => {
         const select = new IsotopeSelect(options)
-          .order("`foo`", "asc")
+          .order("`x`", "asc")
         expect(select.toString())
-          .toEqual("SELECT * FROM `domain` ORDER BY `foo` ASC")
+          .toEqual("SELECT * FROM `domain` ORDER BY `x` ASC")
       })
 
       /* Test: should order items descending */
       it("should return items in descending order", () => {
         const select = new IsotopeSelect(options)
-          .order("`foo`", "desc")
+          .order("`x`", "desc")
         expect(select.toString())
-          .toEqual("SELECT * FROM `domain` ORDER BY `foo` DESC")
+          .toEqual("SELECT * FROM `domain` ORDER BY `x` DESC")
       })
     })
 
