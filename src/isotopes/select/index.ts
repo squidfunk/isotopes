@@ -40,7 +40,7 @@ import { IsotopeOptions } from ".."
 export class IsotopeSelect<T extends {}> {
 
   /**
-   * Create an SQL query builder
+   * Initialize a SQL query builder
    *
    * @param options - Options
    * @param query - Squel instance

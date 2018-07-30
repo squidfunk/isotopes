@@ -123,7 +123,7 @@ export class IsotopeClient {
   protected simpledb: SimpleDB
 
   /**
-   * Create a SimpleDB client
+   * Initialize a SimpleDB client
    *
    * @param domain - SimpleDB domain name
    * @param options - Client options
@@ -133,6 +133,28 @@ export class IsotopeClient {
     protected options: IsotopeClientOptions = defaultOptions
   ) {
     this.simpledb = new SimpleDB({ apiVersion: "2009-04-15" })
+  }
+
+  /**
+   * Create the SimpleDB domain
+   *
+   * @return Promise resolving with no result
+   */
+  public async create(): Promise<void> {
+    await this.simpledb.createDomain({
+      DomainName: this.domain
+    }).promise()
+  }
+
+  /**
+   * Destroy the SimpleDB domain
+   *
+   * @return Promise resolving with no result
+   */
+  public async destroy(): Promise<void> {
+    await this.simpledb.deleteDomain({
+      DomainName: this.domain
+    }).promise()
   }
 
   /**

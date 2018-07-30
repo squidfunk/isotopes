@@ -109,7 +109,7 @@ export class Isotope<
   protected client: IsotopeClient
 
   /**
-   * Create an isotope
+   * Initialize an isotope
    *
    * @param options - Options
    */
@@ -124,6 +124,24 @@ export class Isotope<
    */
   public getQueryBuilder(): IsotopeSelect<T> {
     return new IsotopeSelect(this.options)
+  }
+
+  /**
+   * Create the isotope
+   *
+   * @return Promise resolving with no result
+   */
+  public async create(): Promise<void> {
+    await this.client.create()
+  }
+
+  /**
+   * Destroy the isotope
+   *
+   * @return Promise resolving with no result
+   */
+  public async destroy(): Promise<void> {
+    await this.client.destroy()
   }
 
   /**

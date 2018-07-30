@@ -33,8 +33,12 @@ import { chance } from "_/helpers"
 import { mockData } from "_/mocks/data"
 import { mockIsotopeClientItem } from "_/mocks/isotopes/client"
 import {
+  mockSimpleDBCreateDomainWithError,
+  mockSimpleDBCreateDomainWithSuccess,
   mockSimpleDBDeleteAttributesWithError,
   mockSimpleDBDeleteAttributesWithSuccess,
+  mockSimpleDBDeleteDomainWithError,
+  mockSimpleDBDeleteDomainWithSuccess,
   mockSimpleDBGetAttributesWithError,
   mockSimpleDBGetAttributesWithoutResult,
   mockSimpleDBGetAttributesWithResult,
@@ -43,7 +47,9 @@ import {
   mockSimpleDBSelectWithError,
   mockSimpleDBSelectWithoutResult,
   mockSimpleDBSelectWithResult,
+  restoreSimpleDBCreateDomain,
   restoreSimpleDBDeleteAttributes,
+  restoreSimpleDBDeleteDomain,
   restoreSimpleDBGetAttributes,
   restoreSimpleDBPutAttributes,
   restoreSimpleDBSelect
@@ -61,6 +67,70 @@ describe("isotopes/client", () => {
 
     /* Client configuration */
     const domain = chance.string()
+
+    /* #create */
+    describe("#create", () => {
+
+      /* Restore AWS mocks */
+      afterEach(() => {
+        restoreSimpleDBCreateDomain()
+      })
+
+      /* Test: should create domain */
+      it("should create domain", async () => {
+        const createDomainMock = mockSimpleDBCreateDomainWithSuccess()
+        const client = new IsotopeClient(domain)
+        await client.create()
+        expect(createDomainMock).toHaveBeenCalled()
+      })
+
+      /* Test: should reject on AWS SimpleDB error */
+      it("should reject on AWS SimpleDB error", async done => {
+        const errMock = new Error()
+        const createDomainMock = mockSimpleDBCreateDomainWithError(errMock)
+        try {
+          const client = new IsotopeClient(domain)
+          await client.create()
+          done.fail()
+        } catch (err) {
+          expect(createDomainMock).toHaveBeenCalled()
+          expect(err).toBe(errMock)
+          done()
+        }
+      })
+    })
+
+    /* #destroy */
+    describe("#destroy", () => {
+
+      /* Restore AWS mocks */
+      afterEach(() => {
+        restoreSimpleDBDeleteDomain()
+      })
+
+      /* Test: should destroy domain */
+      it("should destroy domain", async () => {
+        const deleteDomainMock = mockSimpleDBDeleteDomainWithSuccess()
+        const client = new IsotopeClient(domain)
+        await client.destroy()
+        expect(deleteDomainMock).toHaveBeenCalled()
+      })
+
+      /* Test: should reject on AWS SimpleDB error */
+      it("should reject on AWS SimpleDB error", async done => {
+        const errMock = new Error()
+        const deleteDomainMock = mockSimpleDBDeleteDomainWithError(errMock)
+        try {
+          const client = new IsotopeClient(domain)
+          await client.destroy()
+          done.fail()
+        } catch (err) {
+          expect(deleteDomainMock).toHaveBeenCalled()
+          expect(err).toBe(errMock)
+          done()
+        }
+      })
+    })
 
     /* #get */
     describe("#get", () => {

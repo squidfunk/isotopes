@@ -36,8 +36,12 @@ import {
 import { chance } from "_/helpers"
 import { Data, mockData } from "_/mocks/data"
 import {
+  mockIsotopeClientCreateWithError,
+  mockIsotopeClientCreateWithSuccess,
   mockIsotopeClientDeleteWithError,
   mockIsotopeClientDeleteWithSuccess,
+  mockIsotopeClientDestroyWithError,
+  mockIsotopeClientDestroyWithSuccess,
   mockIsotopeClientGetWithError,
   mockIsotopeClientGetWithoutResult,
   mockIsotopeClientGetWithResult,
@@ -64,6 +68,60 @@ describe("isotopes", () => {
       domain: chance.string(),
       key: "id"
     }
+
+    /* #create */
+    describe("#create", () => {
+
+      /* Test: should create isotope */
+      it("should create isotope", async () => {
+        const createMock = mockIsotopeClientCreateWithSuccess()
+        const isotope = new Isotope(options)
+        await isotope.create()
+        expect(createMock).toHaveBeenCalled()
+      })
+
+      /* Test: should reject on client error */
+      it("should reject on client error", async done => {
+        const errMock = new Error()
+        const createMock = mockIsotopeClientCreateWithError(errMock)
+        try {
+          const isotope = new Isotope(options)
+          await isotope.create()
+          done.fail()
+        } catch (err) {
+          expect(createMock).toHaveBeenCalled()
+          expect(err).toBe(errMock)
+          done()
+        }
+      })
+    })
+
+    /* #destroy */
+    describe("#destroy", () => {
+
+      /* Test: should destroy isotope */
+      it("should destroy isotope", async () => {
+        const destroyMock = mockIsotopeClientDestroyWithSuccess()
+        const isotope = new Isotope(options)
+        await isotope.destroy()
+        expect(destroyMock).toHaveBeenCalled()
+      })
+
+      /* Test: should reject on client error */
+      it("should reject on client error", async done => {
+        const errMock = new Error()
+        const destroyMock = mockIsotopeClientDestroyWithError(errMock)
+        try {
+          const isotope = new Isotope(options)
+          await isotope.destroy()
+          done.fail()
+        } catch (err) {
+          expect(destroyMock).toHaveBeenCalled()
+          expect(err).toBe(errMock)
+          done()
+        }
+      })
+    })
 
     /* #getQueryBuilder */
     describe("#getQueryBuilder", () => {

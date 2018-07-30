@@ -54,6 +54,86 @@ export function mockIsotopeClientItem<T>(
  * ------------------------------------------------------------------------- */
 
 /**
+ * Mock IsotopeClient.create
+ *
+ * @param promise - Promise returned by client
+ *
+ * @return Jasmine spy
+ */
+function mockIsotopeClientCreate<T>(
+  promise: () => Promise<T>
+): jasmine.Spy {
+  return spyOn(IsotopeClient.prototype, "create")
+    .and.callFake(promise)
+}
+
+/**
+ * Mock IsotopeClient.create returning with result
+ *
+ * @param item - Item
+ *
+ * @return Jasmine spy
+ */
+export function mockIsotopeClientCreateWithSuccess(): jasmine.Spy {
+  return mockIsotopeClientCreate(() => Promise.resolve())
+}
+
+/**
+ * Mock IsotopeClient.create throwing an error
+ *
+ * @param err - Error to be thrown
+ *
+ * @return Jasmine spy
+ */
+export function mockIsotopeClientCreateWithError(
+  err: Error = new Error("create")
+): jasmine.Spy {
+  return mockIsotopeClientCreate(() => Promise.reject(err))
+}
+
+/* ------------------------------------------------------------------------- */
+
+/**
+ * Mock IsotopeClient.destroy
+ *
+ * @param promise - Promise returned by client
+ *
+ * @return Jasmine spy
+ */
+function mockIsotopeClientDestroy<T>(
+  promise: () => Promise<T>
+): jasmine.Spy {
+  return spyOn(IsotopeClient.prototype, "destroy")
+    .and.callFake(promise)
+}
+
+/**
+ * Mock IsotopeClient.destroy returning with result
+ *
+ * @param item - Item
+ *
+ * @return Jasmine spy
+ */
+export function mockIsotopeClientDestroyWithSuccess(): jasmine.Spy {
+  return mockIsotopeClientDestroy(() => Promise.resolve())
+}
+
+/**
+ * Mock IsotopeClient.destroy throwing an error
+ *
+ * @param err - Error to be thrown
+ *
+ * @return Jasmine spy
+ */
+export function mockIsotopeClientDestroyWithError(
+  err: Error = new Error("destroy")
+): jasmine.Spy {
+  return mockIsotopeClientDestroy(() => Promise.reject(err))
+}
+
+/* ------------------------------------------------------------------------- */
+
+/**
  * Mock IsotopeClient.get
  *
  * @param promise - Promise returned by client

@@ -20,13 +20,58 @@
  * IN THE SOFTWARE.
  */
 
+import { Callback } from "aws-lambda"
+import { mock, restore } from "aws-sdk-mock"
+
 /* ----------------------------------------------------------------------------
- * Re-exports
+ * Functions
  * ------------------------------------------------------------------------- */
 
-export * from "./simpledb/create-domain"
-export * from "./simpledb/delete-attributes"
-export * from "./simpledb/delete-domain"
-export * from "./simpledb/get-attributes"
-export * from "./simpledb/put-attributes"
-export * from "./simpledb/select"
+/**
+ * Mock SimpleDB.createDomain
+ *
+ * @param spy - Spy/fake to mock SimpleDB
+ *
+ * @return Jasmine spy
+ */
+function mockSimpleDBCreateDomain(
+  spy: jasmine.Spy
+): jasmine.Spy {
+  mock("SimpleDB", "createDomain",
+    (data: any, cb: Callback) => {
+      cb(undefined, spy(data))
+    })
+  return spy
+}
+
+/**
+ * Mock SimpleDB.createDomain returning with success
+ *
+ * @return Jasmine spy
+ */
+export function mockSimpleDBCreateDomainWithSuccess(): jasmine.Spy {
+  return mockSimpleDBCreateDomain(
+    jasmine.createSpy("createDomain"))
+}
+
+/**
+ * Mock SimpleDB.createDomain throwing an error
+ *
+ * @param err - Error to be thrown
+ *
+ * @return Jasmine spy
+ */
+export function mockSimpleDBCreateDomainWithError(
+  err: Error = new Error("createDomain")
+): jasmine.Spy {
+  return mockSimpleDBCreateDomain(
+    jasmine.createSpy("createDomain")
+      .and.callFake(() => { throw err }))
+}
+
+/**
+ * Restore SimpleDB.createDomain
+ */
+export function restoreSimpleDBCreateDomain() {
+  restore("SimpleDB", "createDomain")
+}

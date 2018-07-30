@@ -174,9 +174,9 @@ configurations through simple generic typing.
 
 ``` ts
 class Isotope<
- T    extends {},                      /* Data type */
- TPut extends Partial<T> = T,          /* Data type expected by PUT operation */
- TGet extends Partial<T> = TPut        /* Data type returned by GET operation */
+  T    extends {},                     /* Data type */
+  TPut extends Partial<T> = T,         /* Data type expected by PUT operation */
+  TGet extends Partial<T> = TPut       /* Data type returned by GET operation */
 > {}
 ```
 
@@ -293,8 +293,8 @@ LIKE queries) which is far more user-friendly.
 
 > `options.client.consistency: true`
 
-Strong consistency for GET and SELECT operations can be enabled when creating
-an isotope:
+Strong consistency for `GET` and `SELECT` operations can be enabled when
+creating an isotope:
 
 ``` ts
 const tasks = new Isotope<Task>({
