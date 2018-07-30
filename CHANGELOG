@@ -1,5 +1,6 @@
 isotopes-0.3.0 (2018-07-30)
 
+  * Added support for domain creation and destruction
   * Refactored result to return token value instead of function
 
 isotopes-0.2.0 (2018-07-29)
