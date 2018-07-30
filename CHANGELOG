@@ -1,3 +1,7 @@
+isotopes-0.3.1 (2018-07-30)
+
+  * Fixed handling of undefined values in where conditions
+
 isotopes-0.3.0 (2018-07-30)
 
   * Added support for domain creation and destruction
