@@ -1,6 +1,10 @@
+isotopes-0.x.x (2018-xx-xx)
+
+  * Added utility types for recursively making types all optional or required
+
 isotopes-0.3.1 (2018-07-30)
 
-  * Fixed handling of undefined values in where conditions
+  * Fixed handling of undefined values in WHERE clauses
 
 isotopes-0.3.0 (2018-07-30)
 

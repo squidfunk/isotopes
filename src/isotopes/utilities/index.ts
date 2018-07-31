@@ -21,18 +21,38 @@
  */
 
 /* ----------------------------------------------------------------------------
- * Re-exports
+ * Types
  * ------------------------------------------------------------------------- */
 
-export {
-  Isotope,
-  IsotopeOptions,
-  IsotopeResult
-} from "./isotopes"
-export { IsotopeClientOptions } from "./isotopes/client"
-export { IsotopeFormatOptions } from "./isotopes/format"
-export { IsotopeSelect } from "./isotopes/select"
-export {
-  DeepPartial,
-  DeepRequired
-} from "./isotopes/utilities"
+/**
+ * Recursively make all keys in an array type required
+ *
+ * @template T - Data type
+ */
+interface DeepRequiredArray<T> extends Array<DeepRequired<T>> {}
+
+/* ------------------------------------------------------------------------- */
+
+/**
+ * Recursively make all keys in a type required
+ *
+ * @template T - Data type
+ */
+export type DeepRequired<T> =
+  T extends any[] ? DeepRequiredArray<T[number]> :
+  T extends {} ? {
+    [K in keyof T]-?: DeepRequired<T[K]>;
+  } : T
+
+/**
+ * Recursively make all keys in a type optional
+ *
+ * @template T - Data type
+ */
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends Array<infer U>
+    ? Array<DeepPartial<U>>
+    : T[P] extends ReadonlyArray<infer V>
+      ? ReadonlyArray<DeepPartial<V>>
+      : DeepPartial<T[P]>
+}
