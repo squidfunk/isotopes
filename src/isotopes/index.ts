@@ -178,7 +178,7 @@ export class Isotope<
     if (typeof data[this.options.key] === "undefined")
       throw new Error(`Invalid identifier: "${this.options.key}" not found`)
     await this.client.put(
-      data[this.options.key]!.toString(),
+      (data[this.options.key] as any).toString(), // TODO: Fix typings
       flatten(
         omit(data, this.options.key),
         this.options.format
