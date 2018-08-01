@@ -51,7 +51,7 @@ export interface IsotopeDictionary {
  */
 export interface IsotopeFormatOptions {
   encoding?: IsotopeFormatEncoding     /* Format encoding */
-  multiple?: boolean                   /* Multiple attributes for arrays */
+  multiple?: boolean                   /* Multi-attribute values for arrays */
 }
 
 /* ----------------------------------------------------------------------------

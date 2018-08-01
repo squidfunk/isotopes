@@ -33,7 +33,7 @@ import { IsotopeDictionary } from "../format"
  * Isotope client options
  */
 export interface IsotopeClientOptions {
-  consistent: boolean                  /* Whether to use consistent reads */
+  consistent?: boolean                 /* Whether to use consistent reads */
 }
 
 /**
