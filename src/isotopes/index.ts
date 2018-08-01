@@ -31,9 +31,8 @@ import {
   IsotopeFormatOptions,
   unflatten
 } from "./format"
-import {
-  IsotopeSelect
-} from "./select"
+import { IsotopeSelect } from "./select"
+import { DeepPartial } from "./utilities"
 
 /* ----------------------------------------------------------------------------
  * Types
@@ -85,11 +84,11 @@ export interface IsotopeResult<T extends {}> {
  *
  * @example <caption>Allow partial values in PUT and GET operations</caption>
  *
- *   new Isotope<Type, Partial<Type>>
+ *   new Isotope<Type, DeepPartial<Type>>
  *
  * @example <caption>Allow partial values in GET operations only</caption>
  *
- *   new Isotope<Type, Type, Partial<Type>>
+ *   new Isotope<Type, Type, DeepPartial<Type>>
  *
  * @template T - Data type
  * @template TGet - Data type expected by PUT operation
@@ -97,8 +96,8 @@ export interface IsotopeResult<T extends {}> {
  */
 export class Isotope<
   T    extends {},
-  TPut extends Partial<T> = T,
-  TGet extends Partial<T> = TPut
+  TPut extends DeepPartial<T> = T,
+  TGet extends DeepPartial<T> = TPut
 > {
 
   /**
@@ -155,10 +154,10 @@ export class Isotope<
   ): Promise<TGet | undefined>
   public async get(
     id: string, names: string[]
-  ): Promise<Partial<TGet> | undefined>
+  ): Promise<DeepPartial<TGet> | undefined>
   public async get(
     id: string, names?: string[]
-  ): Promise<TGet | undefined> {
+  ): Promise<TGet | DeepPartial<TGet> | undefined> {
     const item = await this.client.get(id, names)
     if (item) {
       const data = unflatten<TGet>(item.attrs, this.options.format)
@@ -176,8 +175,10 @@ export class Isotope<
    * @return Promise resolving with no result
    */
   public async put(data: TPut): Promise<void> {
+    if (typeof data[this.options.key] === "undefined")
+      throw new Error(`Invalid identifier: "${this.options.key}" not found`)
     await this.client.put(
-      data[this.options.key].toString(),
+      data[this.options.key]!.toString(),
       flatten(
         omit(data, this.options.key),
         this.options.format

@@ -26,12 +26,8 @@ import {
   Isotope,
   IsotopeOptions
 } from "isotopes"
-import {
-  IsotopeClientItem
-} from "isotopes/client"
-import {
-  IsotopeSelect
-} from "isotopes/select"
+import { IsotopeClientItem } from "isotopes/client"
+import { IsotopeSelect } from "isotopes/select"
 
 import { chance } from "_/helpers"
 import { Data, mockData } from "_/mocks/data"
@@ -192,6 +188,32 @@ describe("isotopes", () => {
         const isotope = new Isotope<Data>(options)
         expect(await isotope.put(data))
           .toBeUndefined()
+      })
+
+      /* Test: should reject on missing identifier */
+      it("should reject on missing identifier", async done => {
+        try {
+          const isotope = new Isotope<Data, Partial<Data>>(options)
+          await isotope.put({})
+          done.fail()
+        } catch (err) {
+          expect(err)
+            .toEqual(new Error(`Invalid identifier: "id" not found`))
+          done()
+        }
+      })
+
+      /* Test: should reject on undefined identifier */
+      it("should reject on undefined identifier", async done => {
+        try {
+          const isotope = new Isotope<Data, Partial<Data>>(options)
+          await isotope.put({ id: undefined })
+          done.fail()
+        } catch (err) {
+          expect(err)
+            .toEqual(new Error(`Invalid identifier: "id" not found`))
+          done()
+        }
       })
 
       /* Test: should reject on client error */
