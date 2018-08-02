@@ -1,3 +1,9 @@
+isotopes-0.3.3 (2018-08-02)
+
+  * Added runtime check to Isotope.put for presence of item name
+  * Added comments to TypeScript annotations
+  * Fixed generic partial types to be too shallow
+
 isotopes-0.3.2 (2018-08-01)
 
   * Added utility types for recursively making types all optional or required

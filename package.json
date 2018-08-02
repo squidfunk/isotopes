@@ -1,6 +1,6 @@
 {
   "name": "isotopes",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Serverless and typed object store built on top of AWS SimpleDB",
   "keywords": [
     "aws",
