@@ -21,7 +21,7 @@
  */
 
 import { SimpleDB } from "aws-sdk"
-import { castArray, toPairs } from "lodash"
+import { castArray, toPairs } from "lodash/fp"
 
 import { IsotopeDictionary } from "../format"
 

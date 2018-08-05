@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-import { omit } from "lodash"
+import { omit } from "lodash/fp"
 
 import {
   IsotopeClient,
@@ -180,7 +180,7 @@ export class Isotope<
     await this.client.put(
       (data[this.options.key] as any).toString(), // TODO: Fix typings
       flatten(
-        omit(data, this.options.key),
+        omit(this.options.key, data),
         this.options.format
       )
     )

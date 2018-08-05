@@ -21,7 +21,7 @@
  */
 
 import { SimpleDB } from "aws-sdk"
-import { range, toPairs } from "lodash"
+import { range, toPairs } from "lodash/fp"
 
 import {
   IsotopeClient,

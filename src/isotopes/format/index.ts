@@ -25,7 +25,7 @@ import {
   isPlainObject,
   set,
   toPairs
-} from "lodash"
+} from "lodash/fp"
 
 import {
   decode,
@@ -133,13 +133,13 @@ export function unflatten<T extends {}>(
 
       /* Handle all array values separately */
       if (isArray(value)) {
-        return set(data, name.replace(/\[\]$/, ""), value.map(entry =>
+        return set(name.replace(/\[\]$/, ""), value.map(entry =>
           decode(entry, encoding)
-        ))
+        ), data)
 
       /* Decode all other values */
       } else {
-        return set(data, name, decode(value, encoding))
+        return set(name, decode(value, encoding), data)
       }
     }, {} as any)
 }

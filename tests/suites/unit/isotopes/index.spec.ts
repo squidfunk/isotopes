@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-import { range } from "lodash"
+import { range } from "lodash/fp"
 
 import {
   Isotope,

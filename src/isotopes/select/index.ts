@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-import { isArray, isObject, isUndefined } from "lodash"
+import { isArray, isObject, isUndefined } from "lodash/fp"
 import { Expression, select, Select } from "squel"
 
 import { IsotopeOptions } from ".."
