@@ -1,3 +1,7 @@
+isotopes-0.4.0 (2018-08-05)
+
+  * Added fault-tolerance (retryability) to all SimpleDB client requests
+
 isotopes-0.3.3 (2018-08-02)
 
   * Added runtime check to Isotope.put for presence of item name

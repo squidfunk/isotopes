@@ -20,8 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-import { SimpleDB } from "aws-sdk"
+import { AWSError, SimpleDB } from "aws-sdk"
 import { castArray, toPairs } from "lodash/fp"
+import { operation, OperationOptions } from "retry"
 
 import { IsotopeDictionary } from "../format"
 
@@ -34,6 +35,7 @@ import { IsotopeDictionary } from "../format"
  */
 export interface IsotopeClientOptions {
   consistent?: boolean                 /* Whether to use consistent reads */
+  retry?: OperationOptions             /* Retry strategy options */
 }
 
 /**
@@ -53,14 +55,56 @@ export interface IsotopeClientItemList {
 }
 
 /* ----------------------------------------------------------------------------
+ * Functions
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Make a function returning a Promise retryable
+ *
+ * Only 5xx errors need to be retried as we don't need to retry client errors,
+ * so fail immediately if the status code is below 500.
+ *
+ * @param action - Function returning a Promise
+ * @param options - Retry strategy options
+ *
+ * @return Promise resolving with the original Promise's result
+ */
+export function retryable<T>(
+  action: () => Promise<T>,
+  options: OperationOptions
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const op = operation(options)
+    op.attempt(async () => {
+      try {
+        resolve(await action())
+      } catch (err) {
+        const { statusCode } = err as AWSError
+        if (!statusCode || statusCode < 500 || !op.retry(err))
+          reject(err)
+      }
+    })
+  })
+}
+
+/* ----------------------------------------------------------------------------
  * Values
  * ------------------------------------------------------------------------- */
 
 /**
  * Default client options
+ *
+ * We're not using the exponential backoff strategy (as recommended) due to the
+ * observations made in this article: https://bit.ly/2AJQiNV
  */
-const defaultOptions: IsotopeClientOptions = {
-  consistent: false
+const defaultOptions: Required<IsotopeClientOptions> = {
+  consistent: false,
+  retry: {
+    minTimeout: 100,
+    maxTimeout: 250,
+    retries: 3,
+    factor: 1
+  }
 }
 
 /* ----------------------------------------------------------------------------
@@ -118,6 +162,11 @@ export function mapAttributesToDictionary(
 export class IsotopeClient {
 
   /**
+   * Isotope client options
+   */
+  protected options: Required<IsotopeClientOptions>
+
+  /**
    * SimpleDB instance
    */
   protected simpledb: SimpleDB
@@ -130,8 +179,9 @@ export class IsotopeClient {
    */
   public constructor(
     protected domain: string,
-    protected options: IsotopeClientOptions = defaultOptions
+    options?: IsotopeClientOptions
   ) {
+    this.options  = { ...defaultOptions, ...options }
     this.simpledb = new SimpleDB({ apiVersion: "2009-04-15" })
   }
 
@@ -141,9 +191,10 @@ export class IsotopeClient {
    * @return Promise resolving with no result
    */
   public async create(): Promise<void> {
-    await this.simpledb.createDomain({
-      DomainName: this.domain
-    }).promise()
+    await retryable(() =>
+      this.simpledb.createDomain({
+        DomainName: this.domain
+      }).promise(), this.options.retry)
   }
 
   /**
@@ -152,9 +203,10 @@ export class IsotopeClient {
    * @return Promise resolving with no result
    */
   public async destroy(): Promise<void> {
-    await this.simpledb.deleteDomain({
-      DomainName: this.domain
-    }).promise()
+    await retryable(() =>
+      this.simpledb.deleteDomain({
+        DomainName: this.domain
+      }).promise(), this.options.retry)
   }
 
   /**
@@ -168,12 +220,13 @@ export class IsotopeClient {
   public async get(
     id: string, names?: string[]
   ): Promise<IsotopeClientItem | undefined> {
-    const { Attributes } = await this.simpledb.getAttributes({
-      DomainName: this.domain,
-      ItemName: id,
-      AttributeNames: names,
-      ConsistentRead: this.options.consistent
-    }).promise()
+    const { Attributes } = await retryable(() =>
+      this.simpledb.getAttributes({
+        DomainName: this.domain,
+        ItemName: id,
+        AttributeNames: names,
+        ConsistentRead: this.options.consistent
+      }).promise(), this.options.retry)
 
     /* Item not found */
     if (!Attributes)
@@ -197,11 +250,12 @@ export class IsotopeClient {
   public async put(
     id: string, attrs: IsotopeDictionary
   ): Promise<void> {
-    await this.simpledb.putAttributes({
-      DomainName: this.domain,
-      ItemName: id,
-      Attributes: mapDictionaryToAttributes(attrs)
-    }).promise()
+    await retryable(() =>
+      this.simpledb.putAttributes({
+        DomainName: this.domain,
+        ItemName: id,
+        Attributes: mapDictionaryToAttributes(attrs)
+      }).promise(), this.options.retry)
   }
 
   /**
@@ -215,14 +269,15 @@ export class IsotopeClient {
   public async delete(
     id: string, names?: string[]
   ): Promise<void> {
-    await this.simpledb.deleteAttributes({
-      DomainName: this.domain,
-      ItemName: id,
-      Attributes: (names || [])
-        .map<SimpleDB.DeletableAttribute>(name => ({
-          Name: name
-        }))
-    }).promise()
+    await retryable(() =>
+      this.simpledb.deleteAttributes({
+        DomainName: this.domain,
+        ItemName: id,
+        Attributes: (names || [])
+          .map<SimpleDB.DeletableAttribute>(name => ({
+            Name: name
+          }))
+      }).promise(), this.options.retry)
   }
 
   /**
@@ -236,11 +291,12 @@ export class IsotopeClient {
   public async select(
     expr: string, next?: string
   ): Promise<IsotopeClientItemList> {
-    const { Items, NextToken } = await this.simpledb.select({
-      SelectExpression: expr,
-      NextToken: next,
-      ConsistentRead: this.options.consistent
-    }).promise()
+    const { Items, NextToken } = await retryable(() =>
+      this.simpledb.select({
+        SelectExpression: expr,
+        NextToken: next,
+        ConsistentRead: this.options.consistent
+      }).promise(), this.options.retry)
 
     /* No items found */
     if (!Items)
