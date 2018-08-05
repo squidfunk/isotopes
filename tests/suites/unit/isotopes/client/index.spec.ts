@@ -22,17 +22,20 @@
 
 import { SimpleDB } from "aws-sdk"
 import { range, toPairs } from "lodash/fp"
+import { OperationOptions } from "retry"
 
 import {
   IsotopeClient,
   IsotopeClientItem,
-  mapDictionaryToAttributes
+  mapDictionaryToAttributes,
+  retryable
 } from "isotopes/client"
 
 import { chance } from "_/helpers"
 import { mockData } from "_/mocks/data"
 import { mockIsotopeClientItem } from "_/mocks/isotopes/client"
 import {
+  mockAWSError,
   mockSimpleDBCreateDomainWithError,
   mockSimpleDBCreateDomainWithSuccess,
   mockSimpleDBDeleteAttributesWithError,
@@ -61,6 +64,63 @@ import {
 
 /* Isotope client */
 describe("isotopes/client", () => {
+
+  /* retryable */
+  describe("retryable", () => {
+
+    /* Retry strategy options */
+    const options: OperationOptions = {
+      minTimeout: 0,
+      maxTimeout: 0,
+      retries: 3,
+      factor: 1
+    }
+
+    /* Test: should retry on AWS 5xx errors */
+    it("should retry on AWS 5xx errors", async done => {
+      const errMock = mockAWSError(500)
+      const action = jasmine.createSpy("action")
+        .and.returnValue(Promise.reject(errMock))
+      try {
+        await retryable(action, options)
+        done.fail()
+      } catch (err) {
+        expect(action).toHaveBeenCalledTimes(4)
+        expect(err).toBe(errMock)
+        done()
+      }
+    })
+
+    /* Test: should skip retry on AWS 4xx errors */
+    it("should skip retry on AWS 4xx errors", async done => {
+      const errMock = mockAWSError(400)
+      const action = jasmine.createSpy("action")
+        .and.returnValue(Promise.reject(errMock))
+      try {
+        await retryable(action, options)
+        done.fail()
+      } catch (err) {
+        expect(action).toHaveBeenCalledTimes(1)
+        expect(err).toBe(errMock)
+        done()
+      }
+    })
+
+    /* Test: should skip retry on non-AWS errors */
+    it("should skip retry on non-AWS errors", async done => {
+      const errMock = new Error()
+      const action = jasmine.createSpy("action")
+        .and.returnValue(Promise.reject(errMock))
+      try {
+        await retryable(action, options)
+        done.fail()
+      } catch (err) {
+        expect(action).toHaveBeenCalledTimes(1)
+        expect(err).toBe(errMock)
+        done()
+      }
+    })
+  })
 
   /* IsotopeClient */
   describe("IsotopeClient", () => {

@@ -21,13 +21,27 @@
  */
 
 /* ----------------------------------------------------------------------------
- * Re-exports
+ * Class
  * ------------------------------------------------------------------------- */
 
-export * from "./error"
-export * from "./simpledb/create-domain"
-export * from "./simpledb/delete-attributes"
-export * from "./simpledb/delete-domain"
-export * from "./simpledb/get-attributes"
-export * from "./simpledb/put-attributes"
-export * from "./simpledb/select"
+/**
+ * Mock error class, so TypeScript stops moaning
+ */
+class AWSMockError extends Error {
+  public statusCode: number | undefined
+}
+
+/* ----------------------------------------------------------------------------
+ * Data
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Mock AWS error
+ */
+export function mockAWSError(
+  statusCode: number
+): AWSMockError {
+  const err = new AWSMockError()
+  err.statusCode = statusCode
+  return err
+}
