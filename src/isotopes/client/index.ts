@@ -55,6 +55,26 @@ export interface IsotopeClientItemList {
 }
 
 /* ----------------------------------------------------------------------------
+ * Values
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Default client options
+ *
+ * We're not using the exponential backoff strategy (as recommended) due to the
+ * observations made in this article: https://bit.ly/2AJQiNV
+ */
+const defaultOptions: Required<IsotopeClientOptions> = {
+  consistent: false,
+  retry: {
+    minTimeout: 100,
+    maxTimeout: 250,
+    retries: 3,
+    factor: 1
+  }
+}
+
+/* ----------------------------------------------------------------------------
  * Functions
  * ------------------------------------------------------------------------- */
 
@@ -86,30 +106,6 @@ export function retryable<T>(
     })
   })
 }
-
-/* ----------------------------------------------------------------------------
- * Values
- * ------------------------------------------------------------------------- */
-
-/**
- * Default client options
- *
- * We're not using the exponential backoff strategy (as recommended) due to the
- * observations made in this article: https://bit.ly/2AJQiNV
- */
-const defaultOptions: Required<IsotopeClientOptions> = {
-  consistent: false,
-  retry: {
-    minTimeout: 100,
-    maxTimeout: 250,
-    retries: 3,
-    factor: 1
-  }
-}
-
-/* ----------------------------------------------------------------------------
- * Functions
- * ------------------------------------------------------------------------- */
 
 /**
  * Map a dictionary to a list of SimpleDB attributes
