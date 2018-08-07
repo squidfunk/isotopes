@@ -204,7 +204,7 @@ new Isotope<Task, DeepPartial<Task>>(...)
 Allow partial values in `GET` operations only:
 
 ``` ts
-new Isotope<Type, Type, DeepPartial<Type>>(...)
+new Isotope<Task, Task, DeepPartial<Task>>(...)
 ```
 
 Furthermore, `SELECT` operations are assumed to return the same type as `GET`
@@ -312,7 +312,7 @@ const tasks = new Isotope<Task>({
 
 ## API Reference
 
-### `new Isotope<T, [TPut, [TGet]]>(IsotopeOptions<T>: options): Isotope<T>`
+#### `new Isotope<T, [TPut, [TGet]]>(IsotopeOptions<T>: options): Isotope<T>`
 
 Initializes an isotope using the given options of which `domain` and `key` are
 mandatory. The `format` option can be used to define the serialization method
@@ -346,7 +346,7 @@ const isotope = new Isotope<T>({
   [7]: https://github.com/tim-kos/node-retry
   [8]: https://github.com/tim-kos/node-retry#retryoperationoptions
 
-### `isotope.create(): Promise<void>`
+#### `isotope.create(): Promise<void>`
 
 Creates the underlying SimpleDB domain.
 
@@ -356,7 +356,7 @@ Creates the underlying SimpleDB domain.
 await isotope.create()
 ```
 
-### `isotope.destroy(): Promise<void>`
+#### `isotope.destroy(): Promise<void>`
 
 Destroys the underlying SimpleDB domain.
 
@@ -366,7 +366,7 @@ Destroys the underlying SimpleDB domain.
 await isotope.destroy()
 ```
 
-### `isotope.get(id: string, names?: string[]): Promise<TGet | undefined>`
+#### `isotope.get(id: string, names?: string[]): Promise<TGet | undefined>`
 
 Retrieves an item from SimpleDB. The first parameter is assumed to be a value
 of the primary key field specified during initialization. The second parameter
@@ -392,7 +392,7 @@ for `TGet` (see respective section).
 const item = await isotope.get(id)
 ```
 
-### `isotope.put(data: TPut): Promise<void>`
+#### `isotope.put(data: TPut): Promise<void>`
 
 Persists an item within SimpleDB. The keys of the item are flattened, the values
 are encoded according to the method specified in `options.format.encoding` when
@@ -412,7 +412,7 @@ configured with `Partial<T>` or `DeepPartial<T>` for `TPut`
 await isotope.put(data)
 ```
 
-### `isotope.delete(id: string, names?: string[]): Promise<void>`
+#### `isotope.delete(id: string, names?: string[]): Promise<void>`
 
 Deletes an item or specific attributes from SimpleDB. Again, the first parameter
 is assumed to be an identifier, the optional second to be an array of flattened
@@ -429,7 +429,7 @@ field names. By providing those names, specific fields can be deleted.
 await isotope.delete(id)
 ```
 
-### `isotope.select(expr: IsotopeSelect<T> | string, prev?: string): Promise<void>`
+#### `isotope.select(expr: IsotopeSelect<T> | string, prev?: string): Promise<void>`
 
 Retrieves a set of items matching the given SQL query.
 
