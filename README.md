@@ -19,7 +19,8 @@ indexing and querying of JSON documents in [AWS SimpleDB][1] using SQL queries.
 *Isotopes* is just perfect for small to medium-sized datasets, especially for
 indexing data from other AWS services for flexible querying. It can easily be
 run from within [AWS Lambda][2] and reduces the boilerplate that is necessary
-to interface with SimpleDB to an absolute minimum.
+to interface with SimpleDB to an absolute minimum. It is also fault-tolerant
+and will retry failed requests using a configurable strategy.
 
   [1]: https://aws.amazon.com/de/simpledb/
   [2]: https://aws.amazon.com/de/lambda/
@@ -80,10 +81,16 @@ const tasks = new Isotope<Task>({
 })
 ```
 
+If the SimpleDB domain doesn't exist, create it:
+
+``` ts
+await isotope.create()
+```
+
 > Note: *Isotopes* provides a thin wrapper around AWS SimpleDB domains which
   enables storage and retrieval of typed hierarchical data, but it won't create
-  or destroy domains by itself. However, [Terraform][5] is an excellent tool
-  for this.
+  or destroy domains automatically. It is absolutely recommended to use
+  [Terraform][5] for creation and destruction.
 
 Now, suppose we have the following item:
 
@@ -123,23 +130,24 @@ Delete an item by primary key:
 await tasks.delete("example") // => void
 ```
 
-Querying items using the [squel][6] query builder interface:
+We can also build queries using a stripped-down version of the [squel][6] query
+builder interface:
 
 ``` ts
-/* Construct SQL expression with query builder */
-const query = tasks.getQueryBuilder()
+const expr = tasks.getQueryBuilder()
   .where("`active` = ?", true)
   .order("`props.memory >= ?`", 2048)
   .limit(100)
-
-/* Query domain and process all items */
-let prev
-do {
-  const { items, next } = await tasks.select(query, prev)
-  items.map(console.log)
-  prev = next
-} while (prev)
 ```
+
+The query expression can then be used to perform a `SELECT` operation:
+
+``` ts
+await tasks.select(expr)
+```
+
+Please see the API reference for a detailed explanation of the available
+methods.
 
   [5]: https://www.terraform.io/
   [6]: https://hiddentao.com/squel/
@@ -299,6 +307,157 @@ const tasks = new Isotope<Task>({
   domain: "tasks",
   key: "id"
 })
+```
+
+## API Reference
+
+### `new Isotope<T, [TPut, [TGet]]>(IsotopeOptions<T>: options): Isotope<T>`
+
+Initializes an isotope using the given options of which `domain` and `key` are
+mandatory. The `format` option can be used to define the serialization method
+that is used for the values before writing them to SimpleDB. The `client` option
+enables configuration of the underlying SimpleDB client.
+
+| Parameter                     | Type                   | Default  | Description                       |
+| ----------------------------- | ---------------------- | -------- | --------------------------------- |
+| `options.domain`              | `string`               | `-`      | SimpleDB domain name              |
+| `options.key`                 | `keyof T`              | `-`      | SimpleDB item name (primary key)  |
+| `options.format?`             | `IsotopeFormatOptions` | `"json"` | Format options                    |
+| `options.format?.encoding?`   | `"json" \| "text"`     | `"json"` | Encoding method for values        |
+| `options.format?.multiple?`   | `boolean`              | `true`   | Multi-attribute values for arrays |
+| `options.client?`             | `IsotopeClientOptions` | `"json"` | SimpleDB client options           |
+| `options.client?.consistent?` | `boolean`              | `false`  | Whether to use consistent reads   |
+| `options.client?.retry?`      | `OperationOptions`     | `false`  | Retry strategy options            |
+
+Under the hood, *Isotopes* uses [retry][7], a library implementing exponential
+backoff as a retry strategy. [`OperationOptions`][8] is the input parameter
+for `retry.operation` which is used to implement retryability.
+
+**Example**
+
+``` ts
+const isotope = new Isotope<T>({
+  domain: "<domain>",
+  key: "<keyof T>"
+})
+```
+
+  [7]: https://github.com/tim-kos/node-retry
+  [8]: https://github.com/tim-kos/node-retry#retryoperationoptions
+
+### `isotope.create(): Promise<void>`
+
+Creates the underlying SimpleDB domain.
+
+**Example**
+
+``` ts
+await isotope.create()
+```
+
+### `isotope.destroy(): Promise<void>`
+
+Destroys the underlying SimpleDB domain.
+
+**Example**
+
+``` ts
+await isotope.destroy()
+```
+
+### `isotope.get(id: string, names?: string[]): Promise<TGet | undefined>`
+
+Retrieves an item from SimpleDB. The first parameter is assumed to be a value
+of the primary key field specified during initialization. The second parameter
+can be an array of flattened field names (e.g `foo.bar`) that would also be
+passed to a `SELECT` statement when working with SimpleDB in order to obtain
+partial objects. If the second parameter is specified, this method will
+return a Promise resolving with a `DeepPartial<T>` type.
+
+| Parameter | Type       | Default     | Description     |
+| --------- | ---------- | ----------- | --------------  |
+| `id`      | `string`   | `-`         | Identifier      |
+| `names?`  | `string[]` | `undefined` | Attribute names |
+
+Note that this method may return partial items if they are stored as such in
+SimpleDB, so to obtain type safety with TypeScript, you have to make sure that
+all items define all required fields before retrieving them from SimpleDB. If
+unsure, it's best to configure *Isotopes* with `Partial<T>` or `DeepPartial<T>`
+for `TGet` (see respective section).
+
+**Example**:
+
+``` ts
+const item = await isotope.get(id)
+```
+
+### `isotope.put(data: TPut): Promise<void>`
+
+Persists an item within SimpleDB. The keys of the item are flattened, the values
+are encoded according to the method specified in `options.format.encoding` when
+initializing the isotope before delegating to SimpleDB. This method assumes
+that values are of type `TPut` which is specified during initilization (see
+respective section). By default partial values will be rejected due to the
+provided typings. In order to write partial values, *Isotopes* must be
+configured with `Partial<T>` or `DeepPartial<T>` for `TPut`
+
+| Parameter | Type   | Default | Description           |
+| --------- | ------ | ------- | --------------------- |
+| `data`    | `TPut` | `-`     | Data to be persisted  |
+
+**Example**
+
+``` ts
+await isotope.put(data)
+```
+
+### `isotope.delete(id: string, names?: string[]): Promise<void>`
+
+Deletes an item or specific attributes from SimpleDB. Again, the first parameter
+is assumed to be an identifier, the optional second to be an array of flattened
+field names. By providing those names, specific fields can be deleted.
+
+| Parameter | Type       | Default     | Description     |
+| --------- | ---------- | ----------- | --------------  |
+| `id`      | `string`   | `-`         | Identifier      |
+| `names?`  | `string[]` | `undefined` | Attribute names |
+
+**Example**
+
+``` ts
+await isotope.delete(id)
+```
+
+### `isotope.select(expr: IsotopeSelect<T> | string, prev?: string): Promise<void>`
+
+Retrieves a set of items matching the given SQL query.
+
+| Parameter | Type               | Default     | Description          |
+| --------- | ------------------ | ----------- | -------------------- |
+| `expr`    | `IsotopeSelect<T>` | `-`         | SQL query expression |
+| `prev?`   | `string`           | `undefined` | Pagination token     |
+
+Querying items is best done using the [squel][6] query builder interface:
+
+``` ts
+const expr = isotope.getQueryBuilder()
+  .where("`foo.bar` = ?", 42)
+  .limit(100)
+```
+
+A `SELECT` operation may return a pagination token, as SimpleDB uses token-based
+pagination. This token can then be passed again to the same method to obtain
+the next page of items.
+
+**Example**
+
+``` ts
+let prev
+do {
+  const { items, next } = await isotopes.select(expr, prev)
+  items.map(console.log)
+  prev = next
+} while (prev)
 ```
 
 ## License
