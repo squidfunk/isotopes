@@ -1,3 +1,7 @@
+isotopes-0.4.2 (2018-08-07)
+
+  * Fixed failing delete operation without attribute names
+
 isotopes-0.4.1 (2018-08-07)
 
   * Added missing typings to dependencies
