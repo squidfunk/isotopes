@@ -19,8 +19,7 @@ indexing and querying of JSON documents in [AWS SimpleDB][1] using SQL queries.
 *Isotopes* is just perfect for small to medium-sized datasets, especially for
 indexing data from other AWS services for flexible querying. It can easily be
 run from within [AWS Lambda][2] and reduces the boilerplate that is necessary
-to interface with SimpleDB to an absolute minimum. It is also fault-tolerant
-and will retry failed requests using a configurable strategy.
+to interface with SimpleDB to an absolute minimum.
 
   [1]: https://aws.amazon.com/de/simpledb/
   [2]: https://aws.amazon.com/de/lambda/
@@ -328,11 +327,6 @@ enables configuration of the underlying SimpleDB client.
 | `options.format?.multiple?`   | `boolean`              | `true`   | Multi-attribute values for arrays |
 | `options.client?`             | `IsotopeClientOptions` | `"json"` | SimpleDB client options           |
 | `options.client?.consistent?` | `boolean`              | `false`  | Whether to use consistent reads   |
-| `options.client?.retry?`      | `OperationOptions`     | `false`  | Retry strategy options            |
-
-Under the hood, *Isotopes* uses [retry][7], a library implementing exponential
-backoff as a retry strategy. [`OperationOptions`][8] is the input parameter
-for `retry.operation` which is used to implement retryability.
 
 **Example**
 
@@ -342,9 +336,6 @@ const isotope = new Isotope<T>({
   key: "<keyof T>"
 })
 ```
-
-  [7]: https://github.com/tim-kos/node-retry
-  [8]: https://github.com/tim-kos/node-retry#retryoperationoptions
 
 #### `isotope.create(): Promise<void>`
 

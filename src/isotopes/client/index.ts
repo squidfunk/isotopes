@@ -22,10 +22,8 @@
 
 import { SimpleDB } from "aws-sdk"
 import { castArray, toPairs } from "lodash/fp"
-import { OperationOptions } from "retry"
 
 import { IsotopeDictionary } from "../format"
-import { retryable } from "./retryable"
 
 /* ----------------------------------------------------------------------------
  * Types
@@ -36,7 +34,6 @@ import { retryable } from "./retryable"
  */
 export interface IsotopeClientOptions {
   consistent?: boolean                 /* Whether to use consistent reads */
-  retry?: OperationOptions             /* Retry strategy options */
 }
 
 /**
@@ -61,18 +58,9 @@ export interface IsotopeClientItemList {
 
 /**
  * Default client options
- *
- * We're not using the exponential backoff strategy (as recommended) due to the
- * observations made in this article: https://bit.ly/2AJQiNV
  */
 const defaultOptions: Required<IsotopeClientOptions> = {
-  consistent: false,
-  retry: {
-    minTimeout: 100,
-    maxTimeout: 250,
-    retries: 3,
-    factor: 1
-  }
+  consistent: false
 }
 
 /* ----------------------------------------------------------------------------
@@ -159,10 +147,9 @@ export class IsotopeClient {
    * @return Promise resolving with no result
    */
   public async create(): Promise<void> {
-    await retryable(() =>
-      this.simpledb.createDomain({
-        DomainName: this.domain
-      }).promise(), this.options.retry)
+    await this.simpledb.createDomain({
+      DomainName: this.domain
+    }).promise()
   }
 
   /**
@@ -171,10 +158,9 @@ export class IsotopeClient {
    * @return Promise resolving with no result
    */
   public async destroy(): Promise<void> {
-    await retryable(() =>
-      this.simpledb.deleteDomain({
-        DomainName: this.domain
-      }).promise(), this.options.retry)
+    await this.simpledb.deleteDomain({
+      DomainName: this.domain
+    }).promise()
   }
 
   /**
@@ -188,13 +174,12 @@ export class IsotopeClient {
   public async get(
     id: string, names?: string[]
   ): Promise<IsotopeClientItem | undefined> {
-    const { Attributes } = await retryable(() =>
-      this.simpledb.getAttributes({
-        DomainName: this.domain,
-        ItemName: id,
-        AttributeNames: names,
-        ConsistentRead: this.options.consistent
-      }).promise(), this.options.retry)
+    const { Attributes } = await this.simpledb.getAttributes({
+      DomainName: this.domain,
+      ItemName: id,
+      AttributeNames: names,
+      ConsistentRead: this.options.consistent
+    }).promise()
 
     /* Item not found */
     if (!Attributes)
@@ -218,12 +203,11 @@ export class IsotopeClient {
   public async put(
     id: string, attrs: IsotopeDictionary
   ): Promise<void> {
-    await retryable(() =>
-      this.simpledb.putAttributes({
-        DomainName: this.domain,
-        ItemName: id,
-        Attributes: mapDictionaryToAttributes(attrs)
-      }).promise(), this.options.retry)
+    await this.simpledb.putAttributes({
+      DomainName: this.domain,
+      ItemName: id,
+      Attributes: mapDictionaryToAttributes(attrs)
+    }).promise()
   }
 
   /**
@@ -237,19 +221,18 @@ export class IsotopeClient {
   public async delete(
     id: string, names?: string[]
   ): Promise<void> {
-    await retryable(() =>
-      this.simpledb.deleteAttributes({
-        DomainName: this.domain,
-        ItemName: id,
-        ...(names
-          ? {
-              Attributes: names.map<SimpleDB.DeletableAttribute>(name => ({
-                Name: name
-              }))
-            }
-          : {}
-        )
-      }).promise(), this.options.retry)
+    await this.simpledb.deleteAttributes({
+      DomainName: this.domain,
+      ItemName: id,
+      ...(names
+        ? {
+            Attributes: names.map<SimpleDB.DeletableAttribute>(name => ({
+              Name: name
+            }))
+          }
+        : {}
+      )
+    }).promise()
   }
 
   /**
@@ -263,12 +246,11 @@ export class IsotopeClient {
   public async select(
     expr: string, next?: string
   ): Promise<IsotopeClientItemList> {
-    const { Items, NextToken } = await retryable(() =>
-      this.simpledb.select({
-        SelectExpression: expr,
-        NextToken: next,
-        ConsistentRead: this.options.consistent
-      }).promise(), this.options.retry)
+    const { Items, NextToken } = await this.simpledb.select({
+      SelectExpression: expr,
+      NextToken: next,
+      ConsistentRead: this.options.consistent
+    }).promise()
 
     /* No items found */
     if (!Items)
