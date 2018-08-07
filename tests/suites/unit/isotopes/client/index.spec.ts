@@ -294,6 +294,17 @@ describe("isotopes/client", () => {
         })
       })
 
+      /* Test: should omit attribute names if empty */
+      it("should omit attribute names if empty", async () => {
+        const deleteAttributesMock = mockSimpleDBDeleteAttributesWithSuccess()
+        const client = new IsotopeClient(domain)
+        await client.delete(id)
+        expect(deleteAttributesMock).toHaveBeenCalledWith({
+          DomainName: domain,
+          ItemName: id
+        })
+      })
+
       /* Test: should reject on AWS SimpleDB error */
       it("should reject on AWS SimpleDB error", async done => {
         const errMock = new Error()

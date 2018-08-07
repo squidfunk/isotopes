@@ -241,10 +241,14 @@ export class IsotopeClient {
       this.simpledb.deleteAttributes({
         DomainName: this.domain,
         ItemName: id,
-        Attributes: (names || [])
-          .map<SimpleDB.DeletableAttribute>(name => ({
-            Name: name
-          }))
+        ...(names
+          ? {
+              Attributes: names.map<SimpleDB.DeletableAttribute>(name => ({
+                Name: name
+              }))
+            }
+          : {}
+        )
       }).promise(), this.options.retry)
   }
 
