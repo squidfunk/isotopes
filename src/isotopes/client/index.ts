@@ -20,11 +20,12 @@
  * IN THE SOFTWARE.
  */
 
-import { AWSError, SimpleDB } from "aws-sdk"
+import { SimpleDB } from "aws-sdk"
 import { castArray, toPairs } from "lodash/fp"
-import { operation, OperationOptions } from "retry"
+import { OperationOptions } from "retry"
 
 import { IsotopeDictionary } from "../format"
+import { retryable } from "./retryable"
 
 /* ----------------------------------------------------------------------------
  * Types
@@ -77,35 +78,6 @@ const defaultOptions: Required<IsotopeClientOptions> = {
 /* ----------------------------------------------------------------------------
  * Functions
  * ------------------------------------------------------------------------- */
-
-/**
- * Make a function returning a Promise retryable
- *
- * Only 5xx errors need to be retried as we don't need to retry client errors,
- * so fail immediately if the status code is below 500.
- *
- * @param action - Function returning a Promise
- * @param options - Retry strategy options
- *
- * @return Promise resolving with the original Promise's result
- */
-export function retryable<T>(
-  action: () => Promise<T>,
-  options: OperationOptions
-): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const op = operation(options)
-    op.attempt(async () => {
-      try {
-        resolve(await action())
-      } catch (err) {
-        const { statusCode } = err as AWSError
-        if (!statusCode || statusCode < 500 || !op.retry(err))
-          reject(err)
-      }
-    })
-  })
-}
 
 /**
  * Map a dictionary to a list of SimpleDB attributes
