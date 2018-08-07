@@ -180,8 +180,8 @@ configurations through simple generic typing.
 ``` ts
 class Isotope<
   T    extends {},                     /* Data type */
-  TPut extends Partial<T> = T,         /* Data type expected by PUT operation */
-  TGet extends Partial<T> = TPut       /* Data type returned by GET operation */
+  TPut extends DeepPartial<T> = T,     /* Data type expected by PUT operation */
+  TGet extends DeepPartial<T> = TPut   /* Data type returned by GET operation */
 > {}
 ```
 
@@ -198,13 +198,13 @@ new Isotope<Task>(...)
 Allow partial values in `PUT` and `GET` operations:
 
 ``` ts
-new Isotope<Task, Partial<Task>>(...)
+new Isotope<Task, DeepPartial<Task>>(...)
 ```
 
 Allow partial values in `GET` operations only:
 
 ``` ts
-new Isotope<Type, Type, Partial<Type>>(...)
+new Isotope<Type, Type, DeepPartial<Type>>(...)
 ```
 
 Furthermore, `SELECT` operations are assumed to return the same type as `GET`
@@ -212,7 +212,8 @@ operations. Since this may be different on a case-by-case basis (depending on
 the specific SQL query), it may be overridden on a per-query basis:
 
 ``` ts
-await tasks.select<Partial<Task>>(...)
+import { DeepPartial } from "isotopes"
+await tasks.select<DeepPartial<Task>>(...)
 ```
 
 ### Encoding
