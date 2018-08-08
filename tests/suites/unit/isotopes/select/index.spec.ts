@@ -73,8 +73,8 @@ describe("isotopes/select", () => {
             .toEqual("SELECT * FROM `domain` WHERE (`x` LIKE '\"y%')")
         })
 
-        /* Test: should set quoted string values in prefix queries */
-        it("should set quoted string values in prefix queries", () => {
+        /* Test: should set quoted string values in suffix queries */
+        it("should set quoted string values in suffix queries", () => {
           const select = new IsotopeSelect(options)
             .where("`x` LIKE ?", "%y")
           expect(select.toString())

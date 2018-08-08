@@ -1,0 +1,116 @@
+# Copyright (c) 2018 Martin Donath <martin.donath@squidfunk.com>
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+# Project information
+site_name: Isotopes
+site_description: A Material Design theme for MkDocs
+site_author: Martin Donath
+site_url: https://squidfunk.github.io/isotopes/
+
+# Repository
+repo_name: squidfunk/isotopes
+repo_url: https://github.com/squidfunk/isotopes
+edit_uri: ""
+
+# Copyright
+copyright: 'Copyright &copy; 2018 Martin Donath'
+
+# Configuration
+theme:
+  name: material
+
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  feature:
+    tabs: true
+  palette:
+    primary: pink
+    accent: blue
+  font:
+    text: Roboto
+    code: Roboto Mono
+  logo:
+    icon: grain
+
+# Customization
+extra:
+  social:
+    - type: github-alt
+      link: https://github.com/squidfunk
+    - type: twitter
+      link: https://twitter.com/squidfunk
+    - type: linkedin
+      link: https://linkedin.com/in/squidfunk
+
+# Extensions
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown.extensions.def_list
+  - markdown.extensions.footnotes
+  - markdown.extensions.meta
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Page tree
+nav:
+  - About: index.md
+  - Format:
+    - Flattening: format/flattening.md
+    - Encoding: format/encoding.md
+    - Arrays: format/arrays.md
+  - Reference:
+    - Isotope:
+      - new Isotope: reference/isotope/new.md
+      - Isotope.getQueryBuilder: reference/isotope/get-query-builder.md
+      - Isotope.create: reference/isotope/create.md
+      - Isotope.destroy: reference/isotope/destroy.md
+      - Isotope.get: reference/isotope/get.md
+      - Isotope.put: reference/isotope/put.md
+      - Isotope.delete: reference/isotope/delete.md
+      - Isotope.select: reference/isotope/select.md
+    - IsotopeSelect:
+      - new IsotopeSelect: reference/isotope-select/new.md
+      - IsotopeSelect.where: reference/isotope-select/where.md
+      - IsotopeSelect.order: reference/isotope-select/order.md
+      - IsotopeSelect.limit: reference/isotope-select/limit.md
+
+# Google Analytics
+google_analytics:
+  - !!python/object/apply:os.getenv ["GOOGLE_ANALYTICS_KEY"]
+  - auto

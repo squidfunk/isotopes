@@ -142,7 +142,7 @@ export class Isotope<
   }
 
   /**
-   * Retrieve an item by identifier
+   * Retrieve an item
    *
    * @param id - Identifier
    * @param names - Attribute names
@@ -178,7 +178,7 @@ export class Isotope<
     if (typeof data[this.options.key] === "undefined")
       throw new Error(`Invalid identifier: "${this.options.key}" not found`)
     await this.client.put(
-      (data[this.options.key] as any).toString(), // TODO: Fix typings
+      data[this.options.key] as any, // TODO: Fix typings
       flatten(
         omit(this.options.key, data),
         this.options.format
@@ -199,11 +199,11 @@ export class Isotope<
   }
 
   /**
-   * Retrieve a set of items matching the given SQL query
+   * Retrieve a set of items matching a given SQL query expression
    *
    * @template TSelect - Data type returned by SELECT operation
    *
-   * @param expr - SQL query builder or expression
+   * @param expr - Query builder or string containing a SQL query expression
    * @param prev - Pagination token from previous result
    *
    * @return Promise resolving with result
