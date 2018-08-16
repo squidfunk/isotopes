@@ -133,13 +133,13 @@ export function unflatten<T extends {}>(
 
       /* Handle all array values separately */
       if (isArray(value)) {
-        return set(name.replace(/\[\]$/, ""), value.map(entry =>
+        return set<T>(name.replace(/\[\]$/, ""), value.map(entry =>
           decode(entry, encoding)
         ), data)
 
       /* Decode all other values */
       } else {
-        return set(name, decode(value, encoding), data)
+        return set<T>(name, decode(value, encoding), data)
       }
     }, {} as any)
 }

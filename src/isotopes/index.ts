@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-import { omit } from "lodash/fp"
+import { omit, set } from "lodash/fp"
 
 import {
   IsotopeClient,
@@ -97,7 +97,7 @@ export interface IsotopeResult<T extends {}> {
 export class Isotope<
   T    extends {},
   TPut extends DeepPartial<T> = T,
-  TGet extends DeepPartial<T> = TPut
+  TGet extends DeepPartial<T> = TPut,
 > {
 
   /**
@@ -160,9 +160,11 @@ export class Isotope<
   ): Promise<TGet | DeepPartial<TGet> | undefined> {
     const item = await this.client.get(id, names)
     if (item) {
-      const data = unflatten<TGet>(item.attrs, this.options.format)
-      data[this.options.key] = item.id as any // TODO: Fix typings
-      return data
+      return set(
+        this.options.key,
+        item.id,
+        unflatten<TGet>(item.attrs, this.options.format)
+      )
     }
     return undefined
   }
@@ -178,7 +180,7 @@ export class Isotope<
     if (typeof data[this.options.key] === "undefined")
       throw new Error(`Invalid identifier: "${this.options.key}" not found`)
     await this.client.put(
-      data[this.options.key] as any, // TODO: Fix typings
+      data[this.options.key]!.toString(),
       flatten(
         omit(this.options.key, data),
         this.options.format
@@ -213,11 +215,11 @@ export class Isotope<
   ): Promise<IsotopeResult<TSelect>> {
     const { items, next } = await this.client.select(expr.toString(), prev)
     return {
-      items: items.map(item => {
-        const data = unflatten<TSelect>(item.attrs, this.options.format)
-        data[this.options.key] = item.id as any // TODO: Fix typings
-        return data
-      }),
+      items: items.map(item => set(
+        this.options.key,
+        item.id,
+        unflatten<TSelect>(item.attrs, this.options.format)
+      )),
       next
     }
   }
