@@ -180,6 +180,7 @@ export class Isotope<
     if (typeof data[this.options.key] === "undefined")
       throw new Error(`Invalid identifier: "${this.options.key}" not found`)
     await this.client.put(
+      // tslint:disable-next-line
       data[this.options.key]!.toString(),
       flatten(
         omit(this.options.key, data),
