@@ -1,6 +1,6 @@
 # Isotope.put
 
-*Persists an item within SimpleDB*
+*Persist an item within SimpleDB*
 
 ## Signature
 
@@ -22,7 +22,6 @@ Isotope<T, TPut = T, TGet = T>.put(data: TPut): Promise<void>
     `options.format.encoding` during initialization of the isotope.
 
   [1]: new.md
-  [2]: ../format/encoding.md
 
 ## Example
 

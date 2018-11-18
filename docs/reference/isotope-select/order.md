@@ -1,6 +1,6 @@
 # IsotopeSelect.order
 
-*Add an ORDER BY clause to a SELECT query expression*
+*Add an ORDER BY clause to a SQL query expression*
 
 ## Signature
 
@@ -15,11 +15,11 @@ IsotopeSelect<T>.order(
 
 `field`
 
-:   Sort field
+:   Sort field.
 
 `direction`
 
-:   Sort direction &mdash; *optional*, default: `"asc"`
+:   Sort direction &mdash; *optional*, default: `"asc"`.
 
 ## Example
 

@@ -22,6 +22,7 @@
 .DS_Store
 
 # Development-related
+.vscode
 .env
 
 # NPM-related

@@ -40,8 +40,8 @@ export interface IsotopeClientOptions {
  * Isotope client item
  */
 export interface IsotopeClientItem {
-  id: string,                          /* Item identifier */
-  attrs: IsotopeDictionary             /* Item attributes */
+  id: string,                          /* Identifier */
+  attrs: IsotopeDictionary             /* Attributes */
 }
 
 /**
@@ -53,7 +53,7 @@ export interface IsotopeClientItemList {
 }
 
 /* ----------------------------------------------------------------------------
- * Values
+ * Data
  * ------------------------------------------------------------------------- */
 
 /**
@@ -70,16 +70,16 @@ const defaultOptions: Required<IsotopeClientOptions> = {
 /**
  * Map a dictionary to a list of SimpleDB attributes
  *
- * @param attrs - Attributes
+ * @param dict - Dictionary
  *
  * @return SimpleDB attributes
  */
 export function mapDictionaryToAttributes(
-  attrs: IsotopeDictionary
+  dict: IsotopeDictionary
 ): SimpleDB.ReplaceableAttribute[] {
-  return toPairs(attrs)
-    .reduce<SimpleDB.ReplaceableAttribute[]>((list, [key, value]) => [
-      ...list,
+  return toPairs(dict)
+    .reduce<SimpleDB.ReplaceableAttribute[]>((attrs, [key, value]) => [
+      ...attrs,
       ...castArray(value).map(entry => ({
         Name: key,
         Value: entry,
@@ -91,7 +91,7 @@ export function mapDictionaryToAttributes(
 /**
  * Map a list of SimpleDB attributes to a dictionary
  *
- * @param attrs - Attributes
+ * @param attrs - SimpleDB attributes
  *
  * @return Dictionary
  */
@@ -254,9 +254,7 @@ export class IsotopeClient {
 
     /* No items found */
     if (!Items)
-      return {
-        items: []
-      }
+      return { items: [] }
 
     /* Map identifiers and attributes for each item */
     return {

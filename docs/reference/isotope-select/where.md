@@ -1,6 +1,6 @@
 # IsotopeSelect.where
 
-*Add a WHERE clause to a SELECT query expression*
+*Add a WHERE clause to a SQL query expression*
 
 ## Signature
 

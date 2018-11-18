@@ -40,14 +40,8 @@ theme:
   language: en
   feature:
     tabs: true
-  palette:
-    primary: pink
-    accent: blue
-  font:
-    text: Roboto
-    code: Roboto Mono
   logo:
-    icon: grain
+    icon: "\uE3EA"
 
 # Customization
 extra:
@@ -90,10 +84,8 @@ markdown_extensions:
 # Page tree
 nav:
   - About: index.md
-  - Format:
-    - Flattening: format/flattening.md
-    - Encoding: format/encoding.md
-    - Arrays: format/arrays.md
+  - Getting started: getting-started.md
+  - Format: format.md
   - Reference:
     - Isotope:
       - new Isotope: reference/isotope/new.md
@@ -109,6 +101,9 @@ nav:
       - IsotopeSelect.where: reference/isotope-select/where.md
       - IsotopeSelect.order: reference/isotope-select/order.md
       - IsotopeSelect.limit: reference/isotope-select/limit.md
+  - Release notes: release-notes.md
+  - Contributing: contributing.md
+  - License: license.md
 
 # Google Analytics
 google_analytics:

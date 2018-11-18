@@ -23,7 +23,8 @@ for `TGet`, see [this section][1].
 
 `id`
 
-:   Identifier &mdash; unique value used for identification (SimpleDB item name)
+:   Identifier &mdash; unique value used for identification (SimpleDB item
+    name).
 
 `names`
 

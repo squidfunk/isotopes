@@ -39,7 +39,7 @@ overridden on a per-query basis.
 ``` ts
 let prev
 do {
-  const { items, next } = await isotopes.select(expr, prev)
+  const { items, next } = await isotope.select(expr, prev)
   items.map(console.log)
   prev = next
 } while (prev)

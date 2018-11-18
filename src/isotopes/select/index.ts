@@ -20,8 +20,16 @@
  * IN THE SOFTWARE.
  */
 
-import { isArray, isObject, isUndefined } from "lodash/fp"
-import { Expression, select, Select } from "squel"
+import {
+  isArray,
+  isObject,
+  isUndefined
+} from "lodash/fp"
+import {
+  Expression,
+  select,
+  Select
+} from "squel"
 
 import { IsotopeOptions } from ".."
 
@@ -40,7 +48,7 @@ import { IsotopeOptions } from ".."
 export class IsotopeSelect<T extends {}> {
 
   /**
-   * Initialize a SQL query builder
+   * Initialize a SQL query expression builder
    *
    * @param options - Options
    * @param query - Squel instance

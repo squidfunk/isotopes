@@ -10,10 +10,12 @@ new Isotope<T, [TPut, [TGet]]>(
 ): Isotope<T>
 ```
 
-Initializes an isotope using the given options of which `domain` and `key` are
-mandatory. The `format` option can be used to define the serialization method
-that is used for the values before writing them to SimpleDB. The `client` option
-enables configuration of the SimpleDB client.
+Initializes an isotope using the [given options][1] of which `domain` and `key`
+are mandatory. The `format` option can be used to define the serialization
+method that is used for the values before writing them to SimpleDB. The `client`
+option enables configuration of the SimpleDB client.
+
+  [1]: #parameters
 
 ## Typings
 
@@ -54,6 +56,8 @@ operations return but normally they are equal to the base type.
     new Isotope<T, T, DeepPartial<T>>(...)
     ```
 
+The `DeepPartial` type is exported by *Isotopes*.
+
 ## Parameters
 
 `options.domain`
@@ -66,25 +70,25 @@ operations return but normally they are equal to the base type.
 
 `options.format.encoding`
 
-:   Encoding method for values &mdash; *optional* &mdash; please see
-    [this section][1] to learn how the available encoding methods `"json"` and
-    `"text"` determine how values are written to SimpleDB.
+:   Encoding method for values &mdash; *optional*, default: `"json"` &mdash;
+    please see [this section][2] to learn how the available encoding methods
+    `"json"` and `"text"` determine how values are written to SimpleDB.
 
 `options.format.multiple`
 
 :   Write multi-attribute values for arrays &mdash; *optional*, default: `true`
-    &mdash; this option controls whether arrays are split into separate
-    attributes or encoded in a single attribute using `"json"` encoding. This
-    is especially useful for arrays with primitive values (`string`, `number`
-    and `boolean`) to enable indexing and queryability. If this option is set to
-    `true`, field names are suffixed with `[]` to indicate an array of values.
+    &mdash; please see [this section][3] to learn how this will impact object
+    flattening and persistence within SimpleDB.
 
 `options.client.consistent`
 
 :   Use consistent reads for `GET` and `SELECT` operations &mdash; *optional*,
-    default: `false`
+    default: `false` &mdash; see the [official documentation][4] for further
+    information on consistency within SimpleDB.
 
-  [1]: ../format/encoding.md
+  [2]: ../../format/encoding.md
+  [3]: ../../format/flattening.md
+  [4]: https://docs.aws.amazon.com/de_de/AmazonSimpleDB/latest/DeveloperGuide/ConsistencySummary.html
 
 ## Example
 
@@ -93,13 +97,13 @@ const isotope = new Isotope<T>({
   domain: "<domain>",
   key: "<keyof T>",
 
-  /* Optional */
+  /* Optional: format options */
   format: {
     encoding: "json",
     multiple: true
   },
 
-  /* Optional */
+  /* Optional: SimpleDB client options */
   client: {
     consistent: false
   }

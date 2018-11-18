@@ -1,6 +1,6 @@
 # IsotopeSelect.limit
 
-*Add an LIMIT clause to a SELECT query expression*
+*Add an LIMIT clause to a SQL query expression*
 
 ## Signature
 
@@ -14,7 +14,7 @@ IsotopeSelect<T>.limit(
 
 `count`
 
-:   Number of records
+:   Number of records.
 
 ## Example
 

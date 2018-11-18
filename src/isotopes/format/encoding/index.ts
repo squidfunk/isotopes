@@ -90,7 +90,7 @@ export function encode(
 /**
  * Decode a value using the given encoding
  *
- * See the function documentation on flatten() for a detailed explanation on
+ * See the function documentation on encode() for a detailed explanation on
  * how error handling is implemented and why.
  *
  * @internal

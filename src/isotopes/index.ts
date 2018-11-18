@@ -172,7 +172,7 @@ export class Isotope<
   /**
    * Persist an item
    *
-   * @param data - Data
+   * @param data - Data to be persisted
    *
    * @return Promise resolving with no result
    */
@@ -180,7 +180,7 @@ export class Isotope<
     if (typeof data[this.options.key] === "undefined")
       throw new Error(`Invalid identifier: "${this.options.key}" not found`)
     await this.client.put(
-      // tslint:disable-next-line
+      // tslint:disable-next-line no-non-null-assertion
       data[this.options.key]!.toString(),
       flatten(
         omit(this.options.key, data),
@@ -192,7 +192,7 @@ export class Isotope<
   /**
    * Delete an item
    *
-   * @param item - Item identifier
+   * @param id - Identifier
    * @param names - Attribute names
    *
    * @return Promise resolving with no result

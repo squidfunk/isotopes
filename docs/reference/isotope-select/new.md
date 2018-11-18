@@ -11,7 +11,7 @@ new IsotopeSelect<T]>(
 ```
 
 The query builder should not be instantiated manually. It's better to use
-[Isotope.getQueryBuilder][1] because the isotope will pass its options to the
+[`Isotope.getQueryBuilder`][1] because the isotope will pass its options to the
 constructor.
 
   [1]: ../isotope/get-query-builder.md

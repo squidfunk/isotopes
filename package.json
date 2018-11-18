@@ -53,9 +53,9 @@
     "nyc": "^11.6.0",
     "ts-node": "^7.0.0",
     "tsconfig-paths": "^3.2.0",
-    "tslint": "^5.9.1",
+    "tslint": "^5.11.0",
     "tslint-sonarts": "^1.6.0",
-    "typescript": "^2.9.2"
+    "typescript": "^3.0.1"
   },
   "peerDependencies": {
     "aws-sdk": "*"
