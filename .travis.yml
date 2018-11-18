@@ -39,9 +39,10 @@ script:
   - make build
   - make test
 
-# Upload coverage report
+# Upload coverage report and deploy artifacts
 after_success:
   - node_modules/.bin/codecov
+  - ./.travis.sh
 
 # Release specification
 deploy:

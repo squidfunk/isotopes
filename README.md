@@ -44,8 +44,8 @@ const isotope = new Isotope<T>({
 For detailed instructions see the [getting started guide][3] and the [API
 reference guide][4].
 
-  [3]: getting-started.md
-  [4]: reference/isotope/new.md
+  [3]: https://squidfunk.github.io/isotopes/getting-started/
+  [4]: https://squidfunk.github.io/isotopes/reference/isotope/new/
 
 ## License
 
