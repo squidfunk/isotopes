@@ -27,9 +27,6 @@ set -e
 if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then
   REMOTE="https://${GH_TOKEN}@github.com/squidfunk/isotopes"
 
-  # Install MkDocs and Material for MkDocs for documentation
-  pip install mkdocs mkdocs-material pymdown-extensions
-
   # Set configuration for repository and deploy documentation
   git config --global user.name "${GH_NAME}"
   git config --global user.email "${GH_EMAIL}"
