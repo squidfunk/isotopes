@@ -18,40 +18,43 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-language: node_js
 sudo: false
-
-# Node.js version
-node_js: "8"
 
 # Limit clone depth to 5, to speed up build
 git:
   depth: 5
 
-# Cache dependencies
-cache:
-  directories:
-    - node_modules
+# Define build jobs
+matrix:
+  include:
 
-# Perform build and release
-script:
-  - make lint
-  - make build
-  - make test
+    # Build library, execute tests and determine coverage
+    - language: node_js
+      node_js: "8"
+      cache:
+        directories:
+          - node_modules
+      script:
+        - make lint
+        - make build
+        - make test
+      after_success:
+        - node_modules/.bin/codecov
+      deploy:
+        provider: npm
+        email: $NPM_EMAIL
+        api_key: $NPM_TOKEN
+        on:
+          branch: master
+          tags: true
+        skip_cleanup: true
 
-# Upload coverage report and deploy artifacts
-after_success:
-  - node_modules/.bin/codecov
-  - apt-get update
-  - apt-get install python3
-  - ./.travis.sh
+    # Build and deploy documentation
+    - language: python
+      python: "3.6"
+      install:
+        - pip install mkdocs-material
+      script:
+        - ./.travis.sh
 
-# Release specification
-deploy:
-  provider: npm
-  email: $NPM_EMAIL
-  api_key: $NPM_TOKEN
-  on:
-    branch: master
-    tags: true
-  skip_cleanup: true
+
