@@ -40,6 +40,9 @@ theme:
   language: en
   feature:
     tabs: true
+  palette:
+    primary: blue grey
+    accent: pink
   logo:
     icon: "\uE3EA"
 
