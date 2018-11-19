@@ -269,7 +269,6 @@ describe("isotopes", () => {
       const expr = chance.string()
       const data = range(1, chance.integer({ min: 1, max: 10 }))
         .map<Data>(() => mockData())
-      console.log(data)
 
       /* Pagination token and result */
       const token  = chance.string()
