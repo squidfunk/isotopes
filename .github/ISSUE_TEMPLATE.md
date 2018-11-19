@@ -20,8 +20,3 @@
 
 * isotopes: `...`
 * aws-sdk: `...`
-
-### System information
-
-* OS: [The operating system you're running]
-* Browser: [The browser used, if relevant]

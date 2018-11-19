@@ -27,6 +27,7 @@
 *.tgz
 
 # Source files
+/docs
 /src
 /tests
 /typings
@@ -41,10 +42,12 @@
 .gitignore
 .npmignore
 .nycrc
+.travis.sh
 .travis.yml
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 Makefile
+mkdocs.yml
 package-lock.json
 tsconfig.json
 tslint.json

@@ -35,14 +35,12 @@ copyright: 'Copyright &copy; 2018 Martin Donath'
 # Configuration
 theme:
   name: material
-
-  # Default values, taken from mkdocs_theme.yml
   language: en
   feature:
     tabs: true
   palette:
-    primary: blue grey
-    accent: pink
+    primary: deep purple
+    accent: indigo
   logo:
     icon: "\uE3EA"
 
