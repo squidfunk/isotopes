@@ -86,8 +86,8 @@ The `DeepPartial` type is exported by *Isotopes*.
     default: `false` &mdash; see the [official documentation][4] for further
     information on consistency within SimpleDB.
 
-  [2]: ../../format/encoding.md
-  [3]: ../../format/flattening.md
+  [2]: ../../format.md#encoding
+  [3]: ../../format.md#flattening
   [4]: https://docs.aws.amazon.com/de_de/AmazonSimpleDB/latest/DeveloperGuide/ConsistencySummary.html
 
 ## Example
