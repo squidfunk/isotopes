@@ -23,15 +23,12 @@
 # Exit, if one command fails
 set -e
 
-# Update coverage report
-codecov -X gcov
-
 # Deploy documentation to GitHub pages
 if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then
   REMOTE="https://${GH_TOKEN}@github.com/squidfunk/isotopes"
 
-  # Install Material for MkDocs for documentation
-  pip install --user mkdocs-material
+  # Install MkDocs and Material for MkDocs for documentation
+  pip3 install mkdocs mkdocs-material pymdown-extensions
 
   # Set configuration for repository and deploy documentation
   git config --global user.name "${GH_NAME}"
@@ -39,36 +36,3 @@ if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then
   git remote set-url origin $REMOTE
   mkdocs gh-deploy --force
 fi
-
-# Terminate if we're not on a release branch
-echo "$TRAVIS_BRANCH" | grep -qvE "^[0-9.]+$" && exit 0; :;
-
-# Install dependencies for release build
-pip install --user wheel twine
-
-# Fix SSL warnings for Python > 2.7.9
-# https://urllib3.readthedocs.io/en/latest/user-guide.html#ssl-py2
-pip install --user urllib3[secure]
-
-# Build and install theme and Docker image
-python setup.py build sdist bdist_wheel --universal
-docker build -t $TRAVIS_REPO_SLUG .
-
-# Prepare build regression test
-pushd /tmp
-mkdocs new test && cd test
-
-# Test Docker image build
-docker run --rm -it -v $(pwd):/docs $TRAVIS_REPO_SLUG build --theme material
-
-# Return to original directory
-popd
-
-# Push release to PyPI
-twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
-
-# Push image to Docker Hub
-docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-docker tag $TRAVIS_REPO_SLUG $TRAVIS_REPO_SLUG:$TRAVIS_BRANCH
-docker tag $TRAVIS_REPO_SLUG $TRAVIS_REPO_SLUG:latest
-docker push $TRAVIS_REPO_SLUG
