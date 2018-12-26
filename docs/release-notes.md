@@ -10,6 +10,10 @@ npm update isotopes
 
 ## Changelog
 
+### 0.5.1 <small>_ December 26, 2018</small>
+
+* Updated all dependencies to fix security vulnerabilities
+
 ### 0.5.0 <small>_ August 7, 2018</small>
 
 * Removed retryability implementation (AWS SDK provides it)
