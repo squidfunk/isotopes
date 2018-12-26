@@ -28,7 +28,7 @@
  * Mock error class, so TypeScript stops moaning
  */
 class AWSMockError extends Error {
-  public statusCode: number | undefined
+  public statusCode?: number
 }
 
 /* ----------------------------------------------------------------------------
@@ -37,6 +37,10 @@ class AWSMockError extends Error {
 
 /**
  * Mock AWS error
+ *
+ * @param statusCode - Status code
+ *
+ * @return AWS error
  */
 export function mockAWSError(
   statusCode: number
