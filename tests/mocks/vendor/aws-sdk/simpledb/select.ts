@@ -33,7 +33,7 @@ import {
  * ------------------------------------------------------------------------- */
 
 /**
- * Mock SimpleDB.select
+ * Mock `SimpleDB.select`
  *
  * @param spy - Spy/fake to mock SimpleDB
  *
@@ -50,7 +50,7 @@ function mockSimpleDBSelect(
 }
 
 /**
- * Mock SimpleDB.select returning with result
+ * Mock `SimpleDB.select` returning with result
  *
  * @param items - Items
  * @param next - Token for pagination
@@ -72,7 +72,7 @@ export function mockSimpleDBSelectWithResult(
 }
 
 /**
- * Mock SimpleDB.select returning with result
+ * Mock `SimpleDB.select` returning without result
  *
  * @return Jasmine spy
  */
@@ -83,7 +83,7 @@ export function mockSimpleDBSelectWithoutResult(): jasmine.Spy {
 }
 
 /**
- * Mock SimpleDB.select throwing an error
+ * Mock `SimpleDB.select` throwing an error
  *
  * @param err - Error to be thrown
  *
@@ -98,7 +98,7 @@ export function mockSimpleDBSelectWithError(
 }
 
 /**
- * Restore SimpleDB.select
+ * Restore `SimpleDB.select`
  */
 export function restoreSimpleDBSelect() {
   restore("SimpleDB", "select")

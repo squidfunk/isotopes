@@ -31,7 +31,7 @@ import { IsotopeDictionary } from "isotopes/format"
  * ------------------------------------------------------------------------- */
 
 /**
- * Mock SimpleDB.getAttributes
+ * Mock `SimpleDB.getAttributes`
  *
  * @param spy - Spy/fake to mock SimpleDB
  *
@@ -48,7 +48,7 @@ function mockSimpleDBGetAttributes(
 }
 
 /**
- * Mock SimpleDB.getAttributes returning with result
+ * Mock `SimpleDB.getAttributes` returning with result
  *
  * @param attrs - Attributes
  *
@@ -65,7 +65,7 @@ export function mockSimpleDBGetAttributesWithResult(
 }
 
 /**
- * Mock SimpleDB.getAttributes returning with result
+ * Mock `SimpleDB.getAttributes` returning with result
  *
  * @return Jasmine spy
  */
@@ -76,7 +76,7 @@ export function mockSimpleDBGetAttributesWithoutResult(): jasmine.Spy {
 }
 
 /**
- * Mock SimpleDB.getAttributes throwing an error
+ * Mock `SimpleDB.getAttributes` throwing an error
  *
  * @param err - Error to be thrown
  *

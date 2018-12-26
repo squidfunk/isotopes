@@ -28,7 +28,7 @@ import { mock, restore } from "aws-sdk-mock"
  * ------------------------------------------------------------------------- */
 
 /**
- * Mock SimpleDB.deleteDomain
+ * Mock `SimpleDB.deleteDomain`
  *
  * @param spy - Spy/fake to mock SimpleDB
  *
@@ -45,7 +45,7 @@ function mockSimpleDBDeleteDomain(
 }
 
 /**
- * Mock SimpleDB.deleteDomain returning with success
+ * Mock `SimpleDB.deleteDomain` returning with success
  *
  * @return Jasmine spy
  */
@@ -55,7 +55,7 @@ export function mockSimpleDBDeleteDomainWithSuccess(): jasmine.Spy {
 }
 
 /**
- * Mock SimpleDB.deleteDomain throwing an error
+ * Mock `SimpleDB.deleteDomain` throwing an error
  *
  * @param err - Error to be thrown
  *
@@ -70,7 +70,7 @@ export function mockSimpleDBDeleteDomainWithError(
 }
 
 /**
- * Restore SimpleDB.deleteDomain
+ * Restore `SimpleDB.deleteDomain`
  */
 export function restoreSimpleDBDeleteDomain() {
   restore("SimpleDB", "deleteDomain")

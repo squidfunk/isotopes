@@ -28,7 +28,7 @@ import { mock, restore } from "aws-sdk-mock"
  * ------------------------------------------------------------------------- */
 
 /**
- * Mock SimpleDB.putAttributes
+ * Mock `SimpleDB.putAttributes`
  *
  * @param spy - Spy/fake to mock SimpleDB
  *
@@ -45,7 +45,7 @@ function mockSimpleDBPutAttributes(
 }
 
 /**
- * Mock SimpleDB.putAttributes returning with success
+ * Mock `SimpleDB.putAttributes` returning with success
  *
  * @return Jasmine spy
  */
@@ -55,7 +55,7 @@ export function mockSimpleDBPutAttributesWithSuccess(): jasmine.Spy {
 }
 
 /**
- * Mock SimpleDB.putAttributes throwing an error
+ * Mock `SimpleDB.putAttributes` throwing an error
  *
  * @param err - Error to be thrown
  *
@@ -70,7 +70,7 @@ export function mockSimpleDBPutAttributesWithError(
 }
 
 /**
- * Restore SimpleDB.putAttributes
+ * Restore `SimpleDB.putAttributes`
  */
 export function restoreSimpleDBPutAttributes() {
   restore("SimpleDB", "putAttributes")

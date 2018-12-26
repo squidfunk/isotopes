@@ -36,7 +36,7 @@ class AWSMockError extends Error {
  * ------------------------------------------------------------------------- */
 
 /**
- * Mock AWS error
+ * Mock an AWS error
  *
  * @param statusCode - Status code
  *

@@ -31,7 +31,7 @@ import { flatten } from "isotopes/format"
  * ------------------------------------------------------------------------- */
 
 /**
- * Mock item
+ * Mock `IsotopeClientItem`
  *
  * @template T - Data type
  *
@@ -54,7 +54,7 @@ export function mockIsotopeClientItem<T>(
  * ------------------------------------------------------------------------- */
 
 /**
- * Mock IsotopeClient.create
+ * Mock `IsotopeClient.create`
  *
  * @param promise - Promise returned by client
  *
@@ -68,7 +68,7 @@ function mockIsotopeClientCreate<T>(
 }
 
 /**
- * Mock IsotopeClient.create returning with result
+ * Mock `IsotopeClient.create` returning with result
  *
  * @param item - Item
  *
@@ -79,7 +79,7 @@ export function mockIsotopeClientCreateWithSuccess(): jasmine.Spy {
 }
 
 /**
- * Mock IsotopeClient.create throwing an error
+ * Mock `IsotopeClient.create` throwing an error
  *
  * @param err - Error to be thrown
  *
@@ -94,7 +94,7 @@ export function mockIsotopeClientCreateWithError(
 /* ------------------------------------------------------------------------- */
 
 /**
- * Mock IsotopeClient.destroy
+ * Mock `IsotopeClient.destroy`
  *
  * @param promise - Promise returned by client
  *
@@ -108,7 +108,7 @@ function mockIsotopeClientDestroy<T>(
 }
 
 /**
- * Mock IsotopeClient.destroy returning with result
+ * Mock `IsotopeClient.destroy` returning with result
  *
  * @param item - Item
  *
@@ -119,7 +119,7 @@ export function mockIsotopeClientDestroyWithSuccess(): jasmine.Spy {
 }
 
 /**
- * Mock IsotopeClient.destroy throwing an error
+ * Mock `IsotopeClient.destroy` throwing an error
  *
  * @param err - Error to be thrown
  *
@@ -134,7 +134,7 @@ export function mockIsotopeClientDestroyWithError(
 /* ------------------------------------------------------------------------- */
 
 /**
- * Mock IsotopeClient.get
+ * Mock `IsotopeClient.get`
  *
  * @param promise - Promise returned by client
  *
@@ -148,7 +148,7 @@ function mockIsotopeClientGet<T>(
 }
 
 /**
- * Mock IsotopeClient.get returning with result
+ * Mock `IsotopeClient.get` returning with result
  *
  * @param item - Item
  *
@@ -161,7 +161,7 @@ export function mockIsotopeClientGetWithResult(
 }
 
 /**
- * Mock IsotopeClient.get returning without result
+ * Mock `IsotopeClient.get` returning without result
  *
  * @return Jasmine spy
  */
@@ -170,7 +170,7 @@ export function mockIsotopeClientGetWithoutResult(): jasmine.Spy {
 }
 
 /**
- * Mock IsotopeClient.get throwing an error
+ * Mock `IsotopeClient.get` throwing an error
  *
  * @param err - Error to be thrown
  *
@@ -185,7 +185,7 @@ export function mockIsotopeClientGetWithError(
 /* ------------------------------------------------------------------------- */
 
 /**
- * Mock IsotopeClient.put
+ * Mock `IsotopeClient.put`
  *
  * @param promise - Promise returned by client
  *
@@ -199,7 +199,7 @@ function mockIsotopeClientPut<T>(
 }
 
 /**
- * Mock IsotopeClient.put returning with success
+ * Mock `IsotopeClient.put` returning with success
  *
  * @return Jasmine spy
  */
@@ -208,7 +208,7 @@ export function mockIsotopeClientPutWithSuccess(): jasmine.Spy {
 }
 
 /**
- * Mock IsotopeClient.put throwing an error
+ * Mock `IsotopeClient.put` throwing an error
  *
  * @param err - Error to be thrown
  *
@@ -223,7 +223,7 @@ export function mockIsotopeClientPutWithError(
 /* ------------------------------------------------------------------------- */
 
 /**
- * Mock IsotopeClient.delete
+ * Mock `IsotopeClient.delete`
  *
  * @param promise - Promise returned by client
  *
@@ -237,7 +237,7 @@ function mockIsotopeClientDelete<T>(
 }
 
 /**
- * Mock IsotopeClient.delete returning with success
+ * Mock `IsotopeClient.delete` returning with success
  *
  * @return Jasmine spy
  */
@@ -246,7 +246,7 @@ export function mockIsotopeClientDeleteWithSuccess(): jasmine.Spy {
 }
 
 /**
- * Mock IsotopeClient.delete throwing an error
+ * Mock `IsotopeClient.delete` throwing an error
  *
  * @param err - Error to be thrown
  *
@@ -261,7 +261,7 @@ export function mockIsotopeClientDeleteWithError(
 /* ------------------------------------------------------------------------- */
 
 /**
- * Mock IsotopeClient.select
+ * Mock `IsotopeClient.select`
  *
  * @param promise - Promise returned by client
  *
@@ -275,7 +275,7 @@ function mockIsotopeClientSelect<T>(
 }
 
 /**
- * Mock IsotopeClient.select returning with result
+ * Mock `IsotopeClient.select` returning with result
  *
  * @param list - Item list
  *
@@ -290,7 +290,7 @@ export function mockIsotopeClientSelectWithResult(
 }
 
 /**
- * Mock IsotopeClient.select returning without result
+ * Mock `IsotopeClient.select` returning without result
  *
  * @return Jasmine spy
  */
@@ -301,7 +301,7 @@ export function mockIsotopeClientSelectWithoutResult(): jasmine.Spy {
 }
 
 /**
- * Mock IsotopeClient.select throwing an error
+ * Mock `IsotopeClient.select` throwing an error
  *
  * @param err - Error to be thrown
  *
