@@ -1,7 +1,8 @@
 [![Travis][travis-image]][travis-link]
 [![Codecov][codecov-image]][codecov-link]
 [![Gitter][gitter-image]][gitter-link]
-[![NPM][npm-image]][npm-link]
+[![npm][npm-image]][npm-link]
+[![dependabot][dependabot-image]][dependabot-link]
 
   [travis-image]: https://travis-ci.org/squidfunk/isotopes.svg?branch=master
   [travis-link]: https://travis-ci.org/squidfunk/isotopes
@@ -11,6 +12,8 @@
   [gitter-link]: https://gitter.im/squidfunk/isotopes
   [npm-image]: https://img.shields.io/npm/v/isotopes.svg
   [npm-link]: https://npmjs.com/package/isotopes
+  [dependabot-image]: https://img.shields.io/badge/dependabot-enabled-06f.svg
+  [dependabot-link]: https://dependabot.com
 
 # Isotopes
 
