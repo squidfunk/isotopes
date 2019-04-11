@@ -53,5 +53,4 @@ tsconfig.json
 tslint.json
 
 # Git-related
-/.githooks
 /.github

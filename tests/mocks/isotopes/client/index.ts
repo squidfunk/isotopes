@@ -22,7 +22,8 @@
 
 import {
   IsotopeClient,
-  IsotopeClientItem
+  IsotopeClientItem,
+  IsotopeClientItemList
 } from "isotopes/client"
 import { flatten } from "isotopes/format"
 
@@ -60,8 +61,8 @@ export function mockIsotopeClientItem<T>(
  *
  * @return Jasmine spy
  */
-function mockIsotopeClientCreate<T>(
-  promise: () => Promise<T>
+function mockIsotopeClientCreate(
+  promise: () => Promise<void>
 ): jasmine.Spy {
   return spyOn(IsotopeClient.prototype, "create")
     .and.callFake(promise)
@@ -100,8 +101,8 @@ export function mockIsotopeClientCreateWithError(
  *
  * @return Jasmine spy
  */
-function mockIsotopeClientDestroy<T>(
-  promise: () => Promise<T>
+function mockIsotopeClientDestroy(
+  promise: () => Promise<void>
 ): jasmine.Spy {
   return spyOn(IsotopeClient.prototype, "destroy")
     .and.callFake(promise)
@@ -140,8 +141,8 @@ export function mockIsotopeClientDestroyWithError(
  *
  * @return Jasmine spy
  */
-function mockIsotopeClientGet<T>(
-  promise: () => Promise<T>
+function mockIsotopeClientGet(
+  promise: () => Promise<IsotopeClientItem | undefined>
 ): jasmine.Spy {
   return spyOn(IsotopeClient.prototype, "get")
     .and.callFake(promise)
@@ -191,8 +192,8 @@ export function mockIsotopeClientGetWithError(
  *
  * @return Jasmine spy
  */
-function mockIsotopeClientPut<T>(
-  promise: () => Promise<T>
+function mockIsotopeClientPut(
+  promise: () => Promise<void>
 ): jasmine.Spy {
   return spyOn(IsotopeClient.prototype, "put")
     .and.callFake(promise)
@@ -229,8 +230,8 @@ export function mockIsotopeClientPutWithError(
  *
  * @return Jasmine spy
  */
-function mockIsotopeClientDelete<T>(
-  promise: () => Promise<T>
+function mockIsotopeClientDelete(
+  promise: () => Promise<void>
 ): jasmine.Spy {
   return spyOn(IsotopeClient.prototype, "delete")
     .and.callFake(promise)
@@ -267,8 +268,8 @@ export function mockIsotopeClientDeleteWithError(
  *
  * @return Jasmine spy
  */
-function mockIsotopeClientSelect<T>(
-  promise: () => Promise<T>
+function mockIsotopeClientSelect(
+  promise: () => Promise<IsotopeClientItemList>
 ): jasmine.Spy {
   return spyOn(IsotopeClient.prototype, "select")
     .and.callFake(promise)
