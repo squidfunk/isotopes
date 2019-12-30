@@ -44,7 +44,7 @@
     "@types/lodash": "^4.14.119",
     "@types/node": "^13.1.1",
     "aws-sdk": "^2.382.0",
-    "aws-sdk-mock": "^4.3.0",
+    "aws-sdk-mock": "^5.0.0",
     "chance": "^1.0.18",
     "codecov": "^3.1.0",
     "jasmine": "^3.3.1",
