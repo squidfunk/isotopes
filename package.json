@@ -40,22 +40,22 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
     "@types/chance": "^1.0.0",
-    "@types/jasmine": "^3.3.12",
-    "@types/lodash": "^4.14.119",
+    "@types/jasmine": "^3.5.10",
+    "@types/lodash": "^4.14.144",
     "@types/node": "^13.1.1",
     "aws-sdk": "^2.382.0",
     "aws-sdk-mock": "^4.3.0",
     "chance": "^1.0.18",
     "codecov": "^3.1.0",
     "jasmine": "^3.3.1",
-    "jasmine-spec-reporter": "^4.2.1",
+    "jasmine-spec-reporter": "^5.0.1",
     "nodemon": "^2.0.1",
-    "nyc": "^15.0.0",
+    "nyc": "^15.0.1",
     "ts-node": "^8.0.3",
     "tsconfig-paths": "^3.7.0",
     "tslint": "^5.12.0",
     "tslint-sonarts": "^1.8.0",
-    "typescript": "^3.2.2"
+    "typescript": "^3.8.3"
   },
   "peerDependencies": {
     "aws-sdk": "*"

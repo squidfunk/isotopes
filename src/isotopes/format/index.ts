@@ -85,7 +85,7 @@ export function flatten<T extends {}>(
   data: T, options: Partial<IsotopeFormatOptions> = {}, path: string[] = []
 ): IsotopeDictionary {
   const { encoding, multiple } = { ...defaultOptions, ...options }
-  return toPairs(data)
+  return toPairs<string | string[]>(data)
     .reduce<IsotopeDictionary>((dict, [name, value]) => {
 
       /* Recurse on objects and add name to prefix path */

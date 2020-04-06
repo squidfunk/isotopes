@@ -20,33 +20,33 @@
  * IN THE SOFTWARE.
  */
 
-import { SpecReporter } from "jasmine-spec-reporter"
+import Jasmine from "jasmine"
+import {
+  SpecReporter,
+  StacktraceOption
+} from "jasmine-spec-reporter"
 
 /* ----------------------------------------------------------------------------
  * Entrypoint
  * ------------------------------------------------------------------------- */
 
 /* Reset console in watch mode */
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "development")
   process.stdout.write("\x1Bc")
-}
-
-/* Hack: must be required, since TypeScript typings are crap and don't really
-   work with the normal import syntax */
-// tslint:disable-next-line variable-name
-const Jasmine = require("jasmine")
 
 /* Create new test suite from config file */
-const jasmine = new Jasmine()
+const jasmine = new Jasmine({})
 jasmine.loadConfig({
-  ...require("./jasmine.json"),
-  spec_files: [process.argv[2] || "suites/**/*.spec.ts"]
+  spec_dir: "tests",
+  spec_files: [process.argv[2] || "suites/**/*.spec.ts"],
+  stopSpecOnExpectationFailure: false,
+  random: false
 })
 
 /* Configure reporters */
-jasmine.clearReporters()
-jasmine.addReporter(new SpecReporter({
-  spec: { displayStacktrace: true }
+jasmine.env.clearReporters()
+jasmine.env.addReporter(new SpecReporter({
+  spec: { displayStacktrace: StacktraceOption.PRETTY }
 }))
 
 /* Start test runner */
