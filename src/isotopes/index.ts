@@ -20,6 +20,7 @@
  * IN THE SOFTWARE.
  */
 
+import { SimpleDB } from "aws-sdk"
 import { omit, set } from "lodash/fp"
 
 import {
@@ -33,7 +34,6 @@ import {
 } from "./format"
 import { IsotopeSelect } from "./select"
 import { DeepPartial } from "./utilities"
-import { SimpleDB } from "aws-sdk"
 
 /* ----------------------------------------------------------------------------
  * Types
