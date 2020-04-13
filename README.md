@@ -1,8 +1,10 @@
-[![Travis][travis-image]][travis-link]
+[![Github Action][action-image]][action-link]
 [![Codecov][codecov-image]][codecov-link]
 [![Gitter][gitter-image]][gitter-link]
 [![npm][npm-image]][npm-link]
 
+  [action-image]: https://github.com/squidfunk/isotopes/workflows/ci/badge.svg?branch=master
+  [action-link]: https://github.com/squidfunk/isotopes/actions
   [travis-image]: https://travis-ci.org/squidfunk/isotopes.svg?branch=master
   [travis-link]: https://travis-ci.org/squidfunk/isotopes
   [codecov-image]: https://img.shields.io/codecov/c/github/squidfunk/isotopes/master.svg
