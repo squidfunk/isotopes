@@ -1,3 +1,7 @@
+isotopes-0.6.0 (2020-04-13)
+
+  * Added support for passing options directly to SimpleDB
+
 isotopes-0.5.1 (2018-12-26)
 
   * Updated all dependencies to fix security vulnerabilities
