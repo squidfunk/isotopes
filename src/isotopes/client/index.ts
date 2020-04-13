@@ -132,13 +132,15 @@ export class IsotopeClient {
    *
    * @param domain - SimpleDB domain name
    * @param options - Client options
+   * @param simpleDBOptions - Options to pass directly to SimpleDB constructor
    */
   public constructor(
     protected domain: string,
-    options?: IsotopeClientOptions
+    options?: IsotopeClientOptions,
+    simpleDBOptions?: SimpleDB.ClientConfiguration
   ) {
     this.options  = { ...defaultOptions, ...options }
-    this.simpledb = new SimpleDB({ apiVersion: "2009-04-15" })
+    this.simpledb = new SimpleDB({ ...simpleDBOptions, apiVersion: "2009-04-15" })
   }
 
   /**

@@ -20,6 +20,7 @@
  * IN THE SOFTWARE.
  */
 
+import { SimpleDB } from "aws-sdk"
 import { omit, set } from "lodash/fp"
 
 import {
@@ -109,9 +110,10 @@ export class Isotope<
    * Initialize an isotope
    *
    * @param options - Options
+   * @param simpleDBOptions -- Any configuration to be passed directly to SimpleDB
    */
-  public constructor(protected options: IsotopeOptions<T>) {
-    this.client = new IsotopeClient(options.domain)
+  public constructor(protected options: IsotopeOptions<T>, simpleDBOptions?: SimpleDB.ClientConfiguration) {
+    this.client = new IsotopeClient(options.domain, undefined, simpleDBOptions)
   }
 
   /**
