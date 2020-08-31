@@ -37,13 +37,23 @@ theme:
   name: material
   language: en
   features:
+    - header.hide
     - tabs
     - instant
     - search.highlight
   palette:
-    scheme: preference
-    primary: deep purple
-    accent: indigo
+    - scheme: default
+      primary: deep-purple
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+    - scheme: slate
+      primary: deep-purple
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
   icon:
     logo: material/atom
 
