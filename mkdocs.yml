@@ -37,23 +37,27 @@ theme:
   name: material
   language: en
   features:
-    - header.hide
-    - tabs
-    - instant
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.instant
+    - navigation.tracking
     - search.highlight
+    - search.share
+    - search.suggest
   palette:
     - scheme: default
       primary: deep-purple
       accent: indigo
       toggle:
-        icon: material/toggle-switch
-        name: Switch to light mode
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
     - scheme: slate
       primary: deep-purple
       accent: indigo
       toggle:
-        icon: material/toggle-switch-off-outline
-        name: Switch to dark mode
+        icon: material/toggle-switch
+        name: Switch to light mode
   icon:
     logo: material/atom
 
@@ -98,9 +102,13 @@ markdown_extensions:
 
 # Page tree
 nav:
-  - About: index.md
-  - Getting started: getting-started.md
-  - Format: format.md
+  - Isotopes:
+    - About: index.md
+    - Getting started: getting-started.md
+    - Format: format.md
+    - Release notes: release-notes.md
+    - Contributing: contributing.md
+    - License: license.md
   - Reference:
     - Isotope:
       - new Isotope: reference/isotope/new.md
@@ -116,9 +124,6 @@ nav:
       - IsotopeSelect.where: reference/isotope-select/where.md
       - IsotopeSelect.order: reference/isotope-select/order.md
       - IsotopeSelect.limit: reference/isotope-select/limit.md
-  - Release notes: release-notes.md
-  - Contributing: contributing.md
-  - License: license.md
 
 # Google Analytics
 google_analytics:
