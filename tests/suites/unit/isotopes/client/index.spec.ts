@@ -85,17 +85,16 @@ describe("isotopes/client", () => {
       })
 
       /* Test: should reject on AWS SimpleDB error */
-      it("should reject on AWS SimpleDB error", async done => {
+      it("should reject on AWS SimpleDB error", async () => {
         const errMock = new Error()
         const createDomainMock = mockSimpleDBCreateDomainWithError(errMock)
         try {
           const client = new IsotopeClient(domain)
           await client.create()
-          done.fail()
+          fail()
         } catch (err) {
           expect(createDomainMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -117,17 +116,16 @@ describe("isotopes/client", () => {
       })
 
       /* Test: should reject on AWS SimpleDB error */
-      it("should reject on AWS SimpleDB error", async done => {
+      it("should reject on AWS SimpleDB error", async () => {
         const errMock = new Error()
         const deleteDomainMock = mockSimpleDBDeleteDomainWithError(errMock)
         try {
           const client = new IsotopeClient(domain)
           await client.destroy()
-          done.fail()
+          fail()
         } catch (err) {
           expect(deleteDomainMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -195,17 +193,16 @@ describe("isotopes/client", () => {
       })
 
       /* Test: should reject on AWS SimpleDB error */
-      it("should reject on AWS SimpleDB error", async done => {
+      it("should reject on AWS SimpleDB error", async () => {
         const errMock = new Error()
         const getAttributesMock = mockSimpleDBGetAttributesWithError(errMock)
         try {
           const client = new IsotopeClient(domain)
           await client.get(id)
-          done.fail()
+          fail()
         } catch (err) {
           expect(getAttributesMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -244,17 +241,16 @@ describe("isotopes/client", () => {
         })
 
       /* Test: should reject on AWS SimpleDB error */
-      it("should reject on AWS SimpleDB error", async done => {
+      it("should reject on AWS SimpleDB error", async () => {
         const errMock = new Error()
         const putAttributesMock = mockSimpleDBPutAttributesWithError(errMock)
         try {
           const client = new IsotopeClient(domain)
           await client.put(id, attrs)
-          done.fail()
+          fail()
         } catch (err) {
           expect(putAttributesMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -306,18 +302,17 @@ describe("isotopes/client", () => {
       })
 
       /* Test: should reject on AWS SimpleDB error */
-      it("should reject on AWS SimpleDB error", async done => {
+      it("should reject on AWS SimpleDB error", async () => {
         const errMock = new Error()
         const deleteAttributesMock =
           mockSimpleDBDeleteAttributesWithError(errMock)
         try {
           const client = new IsotopeClient(domain)
           await client.delete(id)
-          done.fail()
+          fail()
         } catch (err) {
           expect(deleteAttributesMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -394,17 +389,16 @@ describe("isotopes/client", () => {
       })
 
       /* Test: should reject on AWS SimpleDB error */
-      it("should reject on AWS SimpleDB error", async done => {
+      it("should reject on AWS SimpleDB error", async () => {
         const errMock = new Error()
         const selectMock = mockSimpleDBSelectWithError(errMock)
         try {
           const client = new IsotopeClient(domain)
           await client.select(chance.string())
-          done.fail()
+          fail()
         } catch (err) {
           expect(selectMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })

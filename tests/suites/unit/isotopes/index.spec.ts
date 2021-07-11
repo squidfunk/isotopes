@@ -77,17 +77,16 @@ describe("isotopes", () => {
       })
 
       /* Test: should reject on client error */
-      it("should reject on client error", async done => {
+      it("should reject on client error", async () => {
         const errMock = new Error()
         const createMock = mockIsotopeClientCreateWithError(errMock)
         try {
           const isotope = new Isotope(options)
           await isotope.create()
-          done.fail()
+          fail()
         } catch (err) {
           expect(createMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -104,17 +103,16 @@ describe("isotopes", () => {
       })
 
       /* Test: should reject on client error */
-      it("should reject on client error", async done => {
+      it("should reject on client error", async () => {
         const errMock = new Error()
         const destroyMock = mockIsotopeClientDestroyWithError(errMock)
         try {
           const isotope = new Isotope(options)
           await isotope.destroy()
-          done.fail()
+          fail()
         } catch (err) {
           expect(destroyMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -161,17 +159,16 @@ describe("isotopes", () => {
       })
 
       /* Test: should reject on client error */
-      it("should reject on client error", async done => {
+      it("should reject on client error", async () => {
         const errMock = new Error()
         const getMock = mockIsotopeClientGetWithError(errMock)
         try {
           const isotope = new Isotope<Data>(options)
           await isotope.get(data.id)
-          done.fail()
+          fail()
         } catch (err) {
           expect(getMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -191,43 +188,40 @@ describe("isotopes", () => {
       })
 
       /* Test: should reject on missing identifier */
-      it("should reject on missing identifier", async done => {
+      it("should reject on missing identifier", async () => {
         try {
           const isotope = new Isotope<Data, Partial<Data>>(options)
           await isotope.put({})
-          done.fail()
+          fail()
         } catch (err) {
           expect(err)
             .toEqual(new Error(`Invalid identifier: "id" not found`))
-          done()
         }
       })
 
       /* Test: should reject on undefined identifier */
-      it("should reject on undefined identifier", async done => {
+      it("should reject on undefined identifier", async () => {
         try {
           const isotope = new Isotope<Data, Partial<Data>>(options)
           await isotope.put({ id: undefined })
-          done.fail()
+          fail()
         } catch (err) {
           expect(err)
             .toEqual(new Error(`Invalid identifier: "id" not found`))
-          done()
         }
       })
 
       /* Test: should reject on client error */
-      it("should reject on client error", async done => {
+      it("should reject on client error", async () => {
         const errMock = new Error()
         const putMock = mockIsotopeClientPutWithError(errMock)
         try {
           const isotope = new Isotope<Data>(options)
           await isotope.put(data)
-          done.fail()
+          fail()
         } catch (err) {
           expect(putMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -247,17 +241,16 @@ describe("isotopes", () => {
       })
 
       /* Test: should reject on client error */
-      it("should reject on client error", async done => {
+      it("should reject on client error", async () => {
         const errMock = new Error()
         const deleteMock = mockIsotopeClientDeleteWithError(errMock)
         try {
           const isotope = new Isotope<Data>(options)
           await isotope.delete(id)
-          done.fail()
+          fail()
         } catch (err) {
           expect(deleteMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })
@@ -319,17 +312,16 @@ describe("isotopes", () => {
       })
 
       /* Test: should reject on client error */
-      it("should reject on client error", async done => {
+      it("should reject on client error", async () => {
         const errMock = new Error()
         const selectMock = mockIsotopeClientSelectWithError(errMock)
         try {
           const isotope = new Isotope<Data>(options)
           await isotope.select(expr)
-          done.fail()
+          fail()
         } catch (err) {
           expect(selectMock).toHaveBeenCalled()
           expect(err).toBe(errMock)
-          done()
         }
       })
     })

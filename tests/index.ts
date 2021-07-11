@@ -47,7 +47,7 @@ jasmine.loadConfig({
 jasmine.env.clearReporters()
 jasmine.env.addReporter(new SpecReporter({
   spec: { displayStacktrace: StacktraceOption.RAW }
-}))
+}) as any) // Hack: see https://bit.ly/2VwDyoI
 
 /* Start test runner */
 jasmine.execute()

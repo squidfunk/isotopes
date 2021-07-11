@@ -34,28 +34,28 @@
     "watch": "make watch"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "squel": "^5.13.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.53",
-    "@types/chance": "^1.1.0",
-    "@types/jasmine": "^3.5.10",
-    "@types/lodash": "^4.14.155",
+    "@types/aws-lambda": "^8.10.78",
+    "@types/chance": "^1.1.3",
+    "@types/jasmine": "^3.8.1",
+    "@types/lodash": "^4.14.171",
     "@types/node": "^15.0.1",
-    "aws-sdk": "^2.691.0",
-    "aws-sdk-mock": "^5.1.0",
+    "aws-sdk": "^2.943.0",
+    "aws-sdk-mock": "^5.2.1",
     "chance": "^1.1.6",
-    "codecov": "^3.7.0",
-    "jasmine": "^3.5.0",
+    "codecov": "^3.8.2",
+    "jasmine": "^3.8.0",
     "jasmine-spec-reporter": "^6.0.0",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.12",
     "nyc": "^15.1.0",
-    "ts-node": "^9.0.0",
-    "tsconfig-paths": "^3.9.0",
+    "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.10.1",
     "tslint": "^5.12.0",
     "tslint-sonarts": "^1.9.0",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.10"
   },
   "peerDependencies": {
     "aws-sdk": "*"
