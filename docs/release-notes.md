@@ -10,13 +10,17 @@ npm update isotopes
 
 ## Changelog
 
+### 0.6.1 <small>_ July 11, 2020</small>
+
+* Updated dependencies to fix security vulnerabilities
+
 ### 0.6.0 <small>_ April 13, 2020</small>
 
 * Added support for passing options directly to SimpleDB
 
 ### 0.5.1 <small>_ December 26, 2018</small>
 
-* Updated all dependencies to fix security vulnerabilities
+* Updated dependencies to fix security vulnerabilities
 
 ### 0.5.0 <small>_ August 7, 2018</small>
 
