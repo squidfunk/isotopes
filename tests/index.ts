@@ -46,7 +46,7 @@ jasmine.loadConfig({
 /* Configure reporters */
 jasmine.env.clearReporters()
 jasmine.env.addReporter(new SpecReporter({
-  spec: { displayStacktrace: StacktraceOption.PRETTY }
+  spec: { displayStacktrace: StacktraceOption.RAW }
 }))
 
 /* Start test runner */
