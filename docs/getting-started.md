@@ -141,8 +141,8 @@ builder interface:
 
 ``` ts
 const expr = tasks.getQueryBuilder()
-  .where("`active` = ?", true)
-  .order("`props.memory >= ?`", 2048)
+  .where("`active` = ? and `props.memory` > ?", true, 0)
+  .order("`props.memory`", "asc")
   .limit(100)
 ```
 
