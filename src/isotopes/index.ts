@@ -49,6 +49,7 @@ export interface IsotopeOptions<T extends {}> {
   client?: IsotopeClientOptions        /* Client options */
   domain: string                       /* SimpleDB domain name */
   key: keyof T                         /* SimpleDB item name (primary key) */
+  type?: string                        /* A type name that won't get minified */
 }
 
 /**
@@ -162,6 +163,7 @@ export class Isotope<
   ): Promise<TGet | DeepPartial<TGet> | undefined> {
     const item = await this.client.get(id, names)
     if (item) {
+      delete item.attrs['__isotopes_type']
       return set(
         this.options.key,
         item.id,
@@ -181,11 +183,13 @@ export class Isotope<
   public async put(data: TPut): Promise<void> {
     if (typeof data[this.options.key] === "undefined")
       throw new Error(`Invalid identifier: "${this.options.key}" not found`)
+
+    const amalgam = Object.assign({}, { '__isotopes_type': this.options.type }, data)
     await this.client.put(
       // tslint:disable-next-line
-      data[this.options.key]!.toString(),
+      amalgam[this.options.key]!.toString(),
       flatten(
-        omit(this.options.key, data),
+        omit(this.options.key, amalgam),
         this.options.format
       )
     )
@@ -218,11 +222,13 @@ export class Isotope<
   ): Promise<IsotopeResult<TSelect>> {
     const { items, next } = await this.client.select(expr.toString(), prev)
     return {
-      items: items.map(item => set(
+      items: items.map(item => {
+        delete item.attrs['__isotopes_type']
+        return set(
         this.options.key,
         item.id,
         unflatten<TSelect>(item.attrs, this.options.format)
-      )),
+      )}),
       next
     }
   }

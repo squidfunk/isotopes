@@ -30,8 +30,12 @@ import {
   select,
   Select
 } from "squel"
+import squel = require("squel")
 
 import { IsotopeOptions } from ".."
+
+const typeFilter = (type: string): Expression => squel.expr()
+  .and('`__isotopes_type` = ?', JSON.stringify(type));
 
 /* ----------------------------------------------------------------------------
  * Class
@@ -58,7 +62,7 @@ export class IsotopeSelect<T extends {}> {
     protected query: Select = select({
       autoQuoteTableNames: true,
       autoQuoteFieldNames: true
-    }).from(options.domain)
+    }).from(options.domain).where(isUndefined(options.type) ? '' : typeFilter(options.type))
   ) {}
 
   /**

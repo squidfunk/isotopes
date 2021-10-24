@@ -22,6 +22,7 @@
 
 import { IsotopeOptions } from "isotopes"
 import { IsotopeSelect } from "isotopes/select"
+import squel from "squel"
 
 import { Data } from "_/mocks/data"
 
@@ -230,6 +231,49 @@ describe("isotopes/select", () => {
             .where("`x` = ?")
           expect(select.toString())
             .toEqual("SELECT * FROM `domain` WHERE (`x` = 'undefined')")
+        })
+      })
+
+      describe("with defined type in options", () => {
+
+        /* Options */
+        const options: IsotopeOptions<Data> = {
+          domain: "domain",
+          key: "id",
+          type: "type"
+        }
+
+        it("should add __isotype_type filter to clause", () => {
+          const select = new IsotopeSelect(options)
+          expect(select.toString())
+            .toEqual("SELECT * FROM `domain` WHERE (`__isotopes_type` = '\"type\"')")
+        })
+
+        it("should append supplied string predicate with AND", () => {
+          const select = new IsotopeSelect(options)
+            .where("`x` = ? or `y` = ?")
+          expect(select.toString())
+            .toEqual("SELECT * FROM `domain` WHERE (`__isotopes_type` = '\"type\"') AND (`x` = 'undefined' or `y` = 'undefined')")
+        })
+
+        it("should append supplied expression prediciate with AND", () => {
+          const predicate = squel.expr()
+            .and('`x` = ?')
+            .or('`y` = ?')
+          const select = new IsotopeSelect(options)
+            .where(predicate)
+          expect(select.toString())
+            .toEqual("SELECT * FROM `domain` WHERE (`__isotopes_type` = '\"type\"') AND (`x` = 'undefined' OR `y` = 'undefined')")
+        })
+
+        it("should append supplied expression prediciate with AND (ignores first OR)", () => {
+          const predicate = squel.expr()
+            .or('`x` = ?')
+            .or('`y` = ?')
+          const select = new IsotopeSelect(options)
+            .where(predicate)
+          expect(select.toString())
+            .toEqual("SELECT * FROM `domain` WHERE (`__isotopes_type` = '\"type\"') AND (`x` = 'undefined' OR `y` = 'undefined')")
         })
       })
     })
